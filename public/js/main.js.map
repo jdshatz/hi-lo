@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../assets/js/main.js"],"names":[],"mappings":";;;;;;;;AAAA,IAAI,IAAI,GAAG,KAAK,CAAC;;AAEjB,OAAO,CAAC,GAAG,iBAAO,CAAC;AACnB,OAAO,CAAC,GAAG,CAAC,IAAI,CAAC,CAAC","file":"main.js","sourcesContent":["let test = 'sdf';\nimport score from './modules/score.js';\nconsole.log(score);\nconsole.log(test);"]}
