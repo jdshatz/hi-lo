@@ -26,28 +26,62 @@ module.exports = function(grunt) {
             }
         },
         browserify: {
-            dist: {
+            main: {
                 options: {
                     debug: true,
-                    transform: [['babelify', {
-                        presets: ['es2015']
-                    }]]
+                    transform: [
+                        ['babelify', {
+                            presets: ['es2015'],
+                        }]
+                    ],
+                    browserifyOptions: {
+                        debug: true
+                    }
                 },
                 files: {
-                    './public/js/main.js': ['./assets/js/main.js']
+                    './public/js/app.bundle.js': ['./assets/js/main.js']
+                }
+            },
+            test: {
+                options: {
+                    debug: true,
+                    transform: [
+                        ['babelify', {
+                            presets: ['es2015'],
+                        }]
+                    ],
+                    browserifyOptions: {
+                        debug: true
+                    }
+                },
+                files: {
+                    './tests/test.bundle.js': ['./assets/js/**/*.test.js']
                 }
             }
         },
         eslint: {
             target: ['./assets/js/**/*.js']
+        },
+        mocha: {
+            test: {
+                src: ['./tests/index.html'],
+                options: {
+                    reporter: 'Spec',
+                    log: true,
+                    logErrors: true,
+                    run: true
+                }
+            }
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-sass');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-mocha');
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-eslint');
 
     grunt.registerTask('default', ['sass', 'eslint', 'browserify']);
     grunt.registerTask('w', ['watch']);
+    grunt.registerTask('test', ['browserify:test', 'mocha:test']);
 };

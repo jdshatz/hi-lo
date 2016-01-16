@@ -7,8 +7,8 @@ var _score2 = _interopRequireDefault(_score);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var test = 'make sure es6 working...';
-console.log(_score2.default.testing(test));
+var yo = 'make sure es6 working...';
+console.log(_score2.default.testing(yo));
 
 },{"./modules/score.js":2}],2:[function(require,module,exports){
 'use strict';

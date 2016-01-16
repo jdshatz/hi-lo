@@ -1,0 +1,30 @@
+<!doctype>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Test Runner</title>
+        <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+    </head>
+    <body>
+        <div id="mocha"></div>
+        <script src="../node_modules/chai/chai.js"></script>
+        <script src="../node_modules/mocha/mocha.js"></script>
+        <script src="../node_modules/sinon/lib/sinon.js"></script>
+        <script>
+            var assert = chai.assert;
+            var expect = chai.expect;
+            mocha.setup({
+                ui: 'tdd',
+                timeout: 5000
+            });
+
+        </script>
+        <script src="test.bundle.js"></script>
+        <script>
+            mocha.checkLeaks();
+            if (navigator.userAgent.indexOf('PhantomJS') < 0) {
+                mocha.run();
+            }
+        </script>
+    </body>
+</html>
