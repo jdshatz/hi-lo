@@ -1,0 +1,36 @@
+.nav {
+	background: $color-1;
+	padding: 1em;
+	position: fixed;
+	width: calc(100% - 2em);
+
+	a {
+		text-decoration: none;
+		color: $color-near-white;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+}
+
+.nav-logo {
+	font-weight: 500;
+	font-size: 1.1em;
+}
+
+.nav-links {
+	list-style: none;
+	float: right;
+	font-size: 0.9em;
+}
+
+.nav-links__item {
+	float: left;
+
+	&:first-child::after {
+		content: '|';
+		margin: 0 0.5em;
+		color: #CCC;
+	}
+}

@@ -1,0 +1,29 @@
+.players {
+	position: fixed;
+	height: 20vh; //TODO: improve this
+	list-style: none;
+	display: block;
+	width: 100%;
+	background: #CCC;
+	bottom: 0;
+}
+
+
+.player {
+	width: 50%;
+	float: left;
+
+	&:first-of-type .player__details {
+		margin-right: 0;
+	}
+}
+
+.player__details {
+	margin: 1em;
+	padding: 1em;
+	border: 1px solid #666;
+
+	.player--active & {
+		background: #FFF;
+	}
+}

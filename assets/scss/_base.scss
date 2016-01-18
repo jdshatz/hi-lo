@@ -1,5 +1,33 @@
 body {
-	background: #FFF;
-	color: #333;
-	font-family: 'Raleway', 'Helvetica', 'Helvetica Neue', 'Arial', sans-serif;
+	background: $color-near-white;
+	color: $text-color;
+	font-family: $font-family;
+	font-size: $base-font-size;
+	margin: 0;
+	padding: 0;
+}
+
+a {
+    color: $color-link;
+    text-decoration: underline;
+    cursor: pointer;
+
+    &:hover {
+        color: $color-hover-link;
+    }
+}
+
+
+ol, ul {
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    font-size: 2em;
+    text-align: center;
+
+    span {
+        font-weight: normal;
+    }
 }

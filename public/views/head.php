@@ -7,7 +7,3 @@
 		<link href='/favicon.ico' rel='shortcut icon'/>
 	</head>
 	<body>
-	Hi-Lo
-	<script type='text/javascript' src='js/app.bundle.js'></script>
-	</body>
-</html>

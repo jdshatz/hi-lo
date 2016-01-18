@@ -1,6 +1,8 @@
 @import '_vars.scss';
 @import '_mixins.scss';
+@import '_helpers.scss';
+
 @import '_base.scss';
 
-@import 'modules/_nav.scss';
-@import 'modules/_player.scss';
+@import 'plugins/_base.scss';
+@import 'modules/_base.scss';

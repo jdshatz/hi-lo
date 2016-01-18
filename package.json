@@ -5,7 +5,9 @@
   "description": "Hi-Lo. A card game for people who like guessing.",
   "author": "rachel@tublitzed.com",
   "dependencies": {
-    "jquery": "^2.2.0"
+    "jquery": "^2.2.0",
+    "font-awesome": "^4.5.0",
+    "vex-js": "^2.3.4"
   },
   "license": "MIT",
   "devDependencies": {
