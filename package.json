@@ -2,7 +2,7 @@
   "name": "hi-lo",
   "version": "0.0.1",
   "repository": "https://github.com/tublitzed/hi-lo",
-  "description": "Hi-Lo. A card game for people who like drawing.",
+  "description": "Hi-Lo. A card game for people who like guessing.",
   "author": "rachel@tublitzed.com",
   "dependencies": {
     "jquery": "^2.2.0"

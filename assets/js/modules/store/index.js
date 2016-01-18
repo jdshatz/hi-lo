@@ -1,12 +1,14 @@
 const storageKey = '3bl.hilo';
+/**
+ * Handles communication to and from local storage.
+ */
 let store = {
 	loadGame: function() {
-		console.log('loadGame');
 		let game = window.localStorage.getItem(storageKey);
-		return game || {};
+		return JSON.parse(game) || {};
 	},
 	saveGame: function(data) {
-		console.log('save game...');
+		window.localStorage.setItem(storageKey, data);
 	}
 };
 module.exports = store;
