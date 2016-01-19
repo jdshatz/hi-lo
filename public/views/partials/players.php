@@ -1,6 +1,6 @@
 <ul class="players">
 	<?php for ($i = 1; $i < 3; $i++) { ?>
-		<li class="player<?php if ($i === 1){?> player--active<?php } ?>" id="player-<?= $i; ?>">
+		<li class="player" id="player<?= $i; ?>">
 			<div class="player__details">
 				<div class="player__points">
 					<span>0</span>

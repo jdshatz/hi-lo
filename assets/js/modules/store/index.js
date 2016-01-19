@@ -9,6 +9,9 @@ let store = {
 	},
 	saveGame: function(data) {
 		window.localStorage.setItem(storageKey, data);
+	},
+	clearGame: function() {
+		window.localStorage.removeItem(storageKey);
 	}
 };
 module.exports = store;

@@ -1,5 +1,5 @@
 .deck {
-	margin: 3em auto 0;
+	margin: 10vh auto 0;
 	width: 650px;
 	text-align: center;
 }
@@ -12,10 +12,21 @@
 .deck__card {
 	display: block;
 	width: 200px;
-	height: 300px;
-	border: 2px solid #555;
-	border-radius: 5px;
+	height: 278px;
+	border: 1px solid #CCC;
+	border-radius: 12px;
 	margin: auto;
+}
+
+.deck__card-img {
+	width: 200px;
+	max-width: 100%;
+	height: auto;
+}
+
+.deck__card--draw-pile {
+	background: #CCC;
+	margin-bottom: 0.5em;
 }
 
 .points-otl-wrapper {
