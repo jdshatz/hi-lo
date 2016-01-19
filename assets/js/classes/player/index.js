@@ -17,7 +17,7 @@ class Player {
 		this.active = opts.active;
 		this.score = opts.score || 0;
 		this.guessCount = opts.guessCount || 0;
-		this.lastGuess = opts.lastGuess || null;
+		this.guess = opts.guess || null;
 		this.$el = $('#' + this.id);
 	}
 
@@ -37,6 +37,11 @@ class Player {
 		if (this.active) {
 			this.$el.addClass(ACTIVE_CLASS);
 		}
+	}
+
+	updateGuess(guess) {
+		this.guessCount += 1;
+		this.guess = guess;
 	}
 };
 module.exports = Player;

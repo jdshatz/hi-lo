@@ -1,0 +1,40 @@
+.guess {
+	text-align: center;
+}
+
+.guess__info {
+	display: none;
+}
+
+.guess__question {
+	margin-top: 0.5em;
+}
+
+.pass-label--disabled {
+	opacity: 0.5;
+}
+
+.guess__buttons {
+
+	label {
+		margin: 0 0.5em;
+		text-transform: uppercase;
+		font-size: 0.9em;
+	}
+
+	.button {
+		position: relative;
+		top: 3px;
+
+
+		&:active {
+			top: 4px;
+		}
+	}
+}
+
+.guess__hint {
+	color: #666;
+	font-size: 0.8em;
+	margin: 2em auto 2em;
+}

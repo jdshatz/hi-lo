@@ -8,7 +8,7 @@ suite('Deck', function() {
 			vent: new Preach()
 		});
 	});
-    test('- getShuffleUrl - should return correct url', function() {
-        assert.equal(deck.getShuffleUrl('foo'), 'http://deckofcardsapi.com/api/deck/foo/shuffle/');
+    test('- getDrawUrl - should return correct url', function() {
+        assert.equal(deck.getDrawUrl('foo'), 'http://deckofcardsapi.com/api/deck/foo/draw/?count=1');
     });
 });

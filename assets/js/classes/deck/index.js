@@ -8,52 +8,41 @@ const CREATE_URL = API_URL + 'api/deck/new/shuffle/?deck_count=1';
  */
 class Deck {
 	/**
-	 * Create a new deck.
-	 * @param  {object} opts {vent: {object}, id: string||null}
+	 * Create a brand new deck, or load an existing one.
+	 * @param  {object} opts {vent: {object}, deck: object|null}
 	 */
 	constructor(opts) {
 		this.vent = opts.vent;
-		if (opts.id) {
-			this.load(opts.id);
-		} else {
+		if (!opts.deck) {
 			this.create();
+		} else {
+			this.unpack(opts.deck);
 		}
-	}
-
-	/**
-	 * Loads an existing deck by id
-	 * 
-	 * @param  {string} id [description]
-	 * @return {[type]}    [description]
-	 */
-	load(id) {
-		var self = this;
-		$.when($.ajax(this.getShuffleUrl(id)))
-			.then(function(data, textStatus, jqXHR) {
-				if (data.success) {
-					self.update(data);
-					return data;
-				} else {
-					//TODO
-				}
-			});
 	}
 
 	/**
 	 * Create a new deck.
 	 */
 	create() {
-		var self = this;
 		$.when($.ajax(CREATE_URL))
-			.then(function(data, textStatus, jqXHR) {
+			.then((data, textStatus, jqXHR) => {
 				if (data.success) {
-					self.update(data);
+					this.update(data);
 					//save deck_id if we've just created a new deck.
-					self.vent.pub('save');
+					this.vent.pub('save');
 				} else {
 					//TODO
 				}
 			});
+	}
+
+	/**
+	 * Unpack stored deck vals.
+	 */
+	unpack(deck) {
+		this.remaining = deck.remaining;
+		this.id = deck.id;
+		this.activeCard = deck.activeCard;
 	}
 
 	/**
@@ -65,6 +54,7 @@ class Deck {
 	update(deck) {
 		this.remaining = deck.remaining;
 		this.id = deck.deck_id;
+		this.prevActiveCard = this.activeCard; //store the last active card for comparing down the line.
 		this.activeCard = deck.cards ? deck.cards[0] : null;
 		return this;
 	}
@@ -73,26 +63,15 @@ class Deck {
 	 * Draw a new card.
 	 */
 	draw() {
-		var self = this;
 		$.when($.ajax(this.getDrawUrl(this.id)))
-			.then(function(data, textStatus, jqXHR) {
+			.then((data, textStatus, jqXHR) => {
 				if (data.success) {
-					self.update(data);
-					self.vent.pub('drawCard');
+					this.update(data);
+					this.vent.pub('drawCard');
 				} else {
 					//TODO
 				}
 			});
-	}
-
-	/**
-	 * Shuffle url also for simply getting an existing deck
-	 * atm since no obvious simple get url.
-	 * @param  {string} id
-	 * @return {string}
-	 */
-	getShuffleUrl(id) {
-		return API_URL + 'api/deck/' + id + '/shuffle/';
 	}
 
 	/**
@@ -102,6 +81,61 @@ class Deck {
 	 */
 	getDrawUrl(id) {
 		return API_URL + 'api/deck/' + id + '/draw/?count=1';
+	}
+
+	/**
+	 * Converts string representation of values to numbers.
+	 * API returns strings in format "10", "2", "JACK", "ACE", etc.
+	 * 
+	 * @param  {string} val [description]
+	 * @return {number}     [description]
+	 */
+	convertValue(val) {
+		let converted = parseInt(val, 10);
+		if (converted === NaN) {
+			return convertFaceValue(val.toLowerCase());
+		}
+		return converted;
+	}
+
+	/**
+	 * Convert face card values to numbers.
+	 * Aces are high in this game.
+	 * @param  {string} val
+	 * @return {number}
+	 */
+	convertFaceValue(val) {
+		if (val === 'jack') {
+			return 11;
+		} else if (val === 'queen') {
+			return 12;
+		} else if (val === 'king') {
+			return 13;
+		}
+		return 14; //ace
+	}
+
+	/**
+	 * TODO: better name.
+	 * @return {Boolean} [description]
+	 */
+	isActiveCardHigherThanPrev() {
+		if (!this.prevActiveCard) {
+			return true;
+		}
+		if (!this.activeCard) {
+			return false;
+		}
+
+		var currVal = this.convertValue(this.activeCard.value);
+		var prevVal = this.convertValue(this.prevActiveCard.value);
+
+		console.log('currVal: ' + currVal + ', preVal: ' + prevVal);
+		
+		if (currVal === prevVal) {
+			//TODO. have to compare suits.
+		}
+		return currVal > prevVal;
 	}
 
 };

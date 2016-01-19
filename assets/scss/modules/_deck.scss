@@ -18,6 +18,10 @@
 	margin: auto;
 }
 
+.deck__card--discard-pile--has-card {
+	border-color: #FFF;
+}
+
 .deck__card-img {
 	width: 200px;
 	max-width: 100%;
