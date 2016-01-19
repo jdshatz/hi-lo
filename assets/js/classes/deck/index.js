@@ -92,8 +92,10 @@ class Deck {
 	 */
 	convertValue(val) {
 		let converted = parseInt(val, 10);
-		if (converted === NaN) {
-			return convertFaceValue(val.toLowerCase());
+
+		//if it's a face card, it'll be NaN
+		if (isNaN(converted)) {
+			return this.convertFaceValue(val.toLowerCase());
 		}
 		return converted;
 	}
@@ -116,8 +118,26 @@ class Deck {
 	}
 
 	/**
-	 * TODO: better name.
-	 * @return {Boolean} [description]
+	 * The game ranks suits in ascending alphabetical order.
+	 * Spades > hearts > diamonds > clubs
+	 * 
+	 * @param  {string} suit
+	 * @return {number}
+	 */
+	convertSuitToNumber(suit) {
+		suit = suit.toLowerCase();
+		if (suit === 'clubs') {
+			return 0;
+		} else if (suit === 'diamonds') {
+			return 1;
+		} else if (suit === 'hearts') {
+			return 2;
+		}
+		return 3;
+	}
+
+	/**
+	 * @return {Boolean}
 	 */
 	isActiveCardHigherThanPrev() {
 		if (!this.prevActiveCard) {
@@ -130,11 +150,13 @@ class Deck {
 		var currVal = this.convertValue(this.activeCard.value);
 		var prevVal = this.convertValue(this.prevActiveCard.value);
 
-		console.log('currVal: ' + currVal + ', preVal: ' + prevVal);
-		
+		//compare suits if needed.
 		if (currVal === prevVal) {
-			//TODO. have to compare suits.
+			var currSuit = this.convertSuitToNumber(this.activeCard.suit);
+			var prevSuit = this.convertSuitToNumber(this.prevActiveCard.suit);
+			return currSuit > prevSuit;
 		}
+
 		return currVal > prevVal;
 	}
 

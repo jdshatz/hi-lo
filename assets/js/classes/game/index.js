@@ -211,7 +211,7 @@ class Game {
 		var $guess = $('.guess');
 		console.log(this);
 		$guess.find('.guess__info').hide();
-		$guess.find('.active-card-value').html(this.deck.activeCard ? this.deck.activeCard.value : '');
+		$guess.find('.active-card-value').html(this.deck.activeCard ? this.deck.activeCard.value.toLowerCase() : '');
 		$guess.find('.active-card-suit').html(this.deck.activeCard ? this.deck.activeCard.suit.toLowerCase(): '');
 
 
