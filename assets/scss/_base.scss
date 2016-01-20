@@ -1,5 +1,5 @@
 body {
-	background: $color-near-white;
+    background: lighten($color-1, 30%);
 	color: $text-color;
 	font-family: $font-family;
 	font-size: $base-font-size;

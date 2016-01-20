@@ -1,5 +1,5 @@
 .nav {
-	background: $color-1;
+	background: $color-1 url("#{$image-dir}congruent_outline.png") repeat 0 0;
 	padding: 1em;
 	position: fixed;
 	width: calc(100% - 2em);

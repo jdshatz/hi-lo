@@ -3,10 +3,10 @@ import Player from '../player';
 import Deck from '../deck';
 import store from '../../modules/store';
 import vex from '../../plugins/vex';
+import roles from '../../modules/roles';
 
 const defaultPlayerCount = 2; //other places in this app assume this number so this isn't really helpful...
-const ROLE_DEALER = 'Dealer';
-const ROLE_GUESSER = 'Guesser';
+
 const GUESS_HI = 'hi';
 const GUESS_LO = 'lo';
 
@@ -14,7 +14,6 @@ class Game {
 	/**
 	 * Create a new game
 	 * @param  {object} opts - includes vent and optionally includes existing game info
-	 
 	 */
 	constructor(opts) {
 		this.vent = opts.vent;
@@ -31,11 +30,17 @@ class Game {
 	 * DOM event handlers also bound here.
 	 */
 	bindEventHandlers() {
-		this.vent.sub('save', this.save.bind(this));
-		this.vent.sub('drawCard', this.onDrawCard.bind(this));
-		$('.deck__card--draw-pile').on('click', this.onDrawPileClick.bind(this));
+		this.vent.sub('save', () => this.save());
+		this.vent.sub('render', () => this.render());
+		this.vent.sub('drawCard', () => this.onDrawCard());
+		this.vent.sub('error', (error) => this.error(error));
 
 		var self = this;
+		$('.deck__card--draw-pile').on('click', function(event) {
+			event.preventDefault();
+			self.onDrawPileClick();
+		});
+
 		$('.guess__buttons .button').on('click', function(event) {
 			event.preventDefault();
 			var $this = $(this);
@@ -47,24 +52,31 @@ class Game {
 		});
 	}
 
+	/**
+	 * Submit a guess for the active player and then switch players.
+	 * @param  {string} guess GUESS_LO|GUESS_HI
+	 */
 	submitGuess(guess) {
-		var activePlayer = this.getActivePlayer();
-		activePlayer.updateGuess(guess);
+		let activePlayer = this.getActivePlayer();
+		activePlayer
+			.setGuess(guess)
+			.setGuessCount(activePlayer.guessCount + 1);
 		this.switchPlayers();
 	}
 
 	pass() {
 		console.log('pass!');
+		this.getActivePlayer().clearGuess();
+		this.switchRoles();
+		this.switchPlayers();
 	}
 
 	/**
 	 * Handle clicks on the draw pile.
-	 * @param  {object} event
 	 */
-	onDrawPileClick(event) {
-		event.preventDefault();
+	onDrawPileClick() {
 		var activePlayer = this.getActivePlayer();
-		if (activePlayer.role === ROLE_DEALER) {
+		if (activePlayer.role === roles.ROLE_DEALER) {
 			this.deck.draw();
 		} else {
 			vex.dialog.alert(activePlayer.name + ", it's not your turn to draw yet. Take a guess instead.");
@@ -78,29 +90,62 @@ class Game {
 	 */
 	onDrawCard() {
 		let inactivePlayer = this.getInactivePlayer();
-		if (inactivePlayer.guess) {
-			this.checkGuess(inactivePlayer)
+		if (this.deck.remaining === 1) {
+			this.onLastCardDraw();
+		} else if (inactivePlayer.guess) {
+			this.checkGuess(inactivePlayer);
 		} else {
 			this.pointsOnTheLine += 1;
 			this.switchPlayers();
 		}
 	}
 
-	checkGuess(inactivePlayer) {
-		console.log('check the guess');
+	onLastCardDraw() {
+		//TODO.
+		//the game is over at this point, show some
+		//indication of this.
 		console.log(this);
-		var isHigher = this.deck.isActiveCardHigherThanPrev();
-		console.log(isHigher);
 	}
 
-	/**
-	 * Fills in UI based on state of the game.
-	 */
-	render() {
-		var activePlayer = this.getActivePlayer();
-		this.updateHeadlineUi(activePlayer);
-		this.updateGuessUi(activePlayer);
-		this.updateDeckUi();
+	checkGuess(inactivePlayer) {
+		let isHigher = this.deck.isActiveCardHigherThanPrev();
+		let isCorrect = isHigher ? inactivePlayer.guess === GUESS_HI : inactivePlayer.guess === GUESS_LO;
+		if (isCorrect) {
+			this.onCorrectGuess();
+		} else {
+			this.onIncorrectGuess(inactivePlayer);
+		}
+	}
+
+	onCorrectGuess() {
+		this.showGuessResult(true);
+		this.pointsOnTheLine += 1;
+		this.switchPlayers();
+	}
+
+	onIncorrectGuess(inactivePlayer) {
+		$('.headline, .guess').hide();
+		this.render();
+		this.showGuessResult(false);
+		inactivePlayer
+			.setScore(inactivePlayer.score + this.pointsOnTheLine)
+			.clearGuess()
+			.render();
+		this.clearDiscardPile();
+	}
+
+	clearDiscardPile() {
+		setTimeout(() => {
+			this.pointsOnTheLine = 0;
+			this.deck.clearActiveCard();
+			$('.headline, .guess').show();
+			this.render();
+		}, 1500);
+	}
+
+	showGuessResult(isCorrect) {
+		//TODO: now, make this pretty.
+		vex.dialog.alert(isCorrect ? 'Correct!' : 'Wrong!');
 	}
 
 	/**
@@ -145,7 +190,7 @@ class Game {
 					vent: this.vent,
 					id: 'player' + i,
 					name: 'Player ' + i,
-					role: i === 1 ? ROLE_DEALER : ROLE_GUESSER,
+					role: i === 1 ? roles.ROLE_DEALER : roles.ROLE_GUESSER,
 					active: i === 1
 				}));
 			}
@@ -202,37 +247,67 @@ class Game {
 	}
 
 	/**
+	 * Switch roles: dealer becomes player, and vice versa.
+	 */
+	switchRoles() {
+		this.players.forEach((player) => player.switchRole().render());
+	}
+
+	togglePassPrivileges(disable) {
+		$('.button-pass').attr('disabled', disable);
+		$('.pass-label').toggleClass('pass-label--disabled', disable);
+	}
+
+	getRemainingGuessesText(guessCount) {
+		if (guessCount == 0) {
+			return '3 correct guesses in a row';
+		} else if (guessCount == 1) {
+			return '2 more correct guesses in a row';
+		}
+		return '1 more correct guess';
+	}
+
+	/**
+	 * Fills in UI based on state of the game.
+	 */
+	render() {
+		var activePlayer = this.getActivePlayer();
+		this.renderHeadline(activePlayer);
+		this.renderGuess(activePlayer);
+		this.renderDeck();
+	}
+
+	/**
 	 * Toggles visibility and updates relevant details for guess ui: hi/lo btns, pass, 
 	 * info text, etc.
 	 * 
 	 * @param  {Player} activePlayer
 	 */
-	updateGuessUi(activePlayer) {
+	renderGuess(activePlayer) {
 		var $guess = $('.guess');
-		console.log(this);
 		$guess.find('.guess__info').hide();
 		$guess.find('.active-card-value').html(this.deck.activeCard ? this.deck.activeCard.value.toLowerCase() : '');
-		$guess.find('.active-card-suit').html(this.deck.activeCard ? this.deck.activeCard.suit.toLowerCase(): '');
+		$guess.find('.active-card-suit').html(this.deck.activeCard ? this.deck.activeCard.suit.toLowerCase() : '');
 
 
 		//there are 3 possible cases here that require 3 different UIs.
 		// a - guesser. b - dealer, no guess has been made. c - dealer - with active guess.
-		if (activePlayer.role === ROLE_GUESSER) {
-			$guess.find('.remaining-guesses-to-pass').html(this.getRemainingGuessesText(activePlayer.guessCount));
+		if (activePlayer.role === roles.ROLE_GUESSER) {
+			if (activePlayer.guessCount < 3) {
+				$guess.find('.guess__hint').show();
+				$guess.find('.remaining-guesses-to-pass').html(this.getRemainingGuessesText(activePlayer.guessCount));
+				this.togglePassPrivileges(true);
+			} else {
+				$guess.find('.guess__hint').hide();
+				this.togglePassPrivileges(false);
+			}
 			$guess.find('.guess__info--guesser').show();
-		} else if(this.deck.activeCard) {
+		} else if (this.deck.activeCard) {
 			let inactivePlayer = this.getInactivePlayer();
 			$guess.find('.guesser-name').html(inactivePlayer.name);
 			$guess.find('.guess-value').html(inactivePlayer.guess === GUESS_LO ? 'lower' : 'higher');
 			$guess.find('.guess__info--dealer').show();
 		}
-	}
-
-	getRemainingGuessesText(guessCount) {
-		if (guessCount === 0) {
-			return 3;
-		}
-		return (3 - guessCount) + ' more';
 	}
 
 	/**
@@ -241,10 +316,10 @@ class Game {
 	 *
 	 * @param {Player} activePlayer
 	 */
-	updateHeadlineUi(activePlayer) {
+	renderHeadline(activePlayer) {
 		var $headline = $('.headline');
-		$headline.find('.headline__player').html(this.getHeadlinePlayer(activePlayer));
-		$headline.find('.headline__instruction').html(this.getHeadlineInstruction(activePlayer));
+		$headline.find('.headline__player').html(activePlayer.getHeadline());
+		$headline.find('.headline__instruction').html(activePlayer.getSecondaryHeadline());
 	}
 
 	/**
@@ -253,7 +328,7 @@ class Game {
 	 * -renders new card
 	 * -points on the line
 	 */
-	updateDeckUi() {
+	renderDeck() {
 		let $pointsOnTheLineWrapper = $('.points-otl-wrapper');
 		$pointsOnTheLineWrapper.find('.points-otl').html(this.pointsOnTheLine);
 
@@ -264,39 +339,49 @@ class Game {
 			$pointsOnTheLineWrapper.find('span').text('points on the line');
 		}
 
-		$('.cards-left').html(this.deck.remaining);
+		let cardsLeft = this.deck.remaining || 52; //we don't always have a deck here...(so really, shoud move this.)
+		cardsLeft += (cardsLeft === 1) ? ' card left' : ' cards left';
+		$('.cards-left').html(cardsLeft);
 
 		//this won't always be set if nothing in discard pile.
+		//
+		//TODO refactor
 		if (this.deck.activeCard) {
 			let card = this.deck.activeCard;
 			let $cardImg = $('<img>').prop('src', card.images.png).prop('alt', card.value + ' ' + card.suit.toLowerCase());
 			$cardImg.addClass('deck__card-img')
 			$('.deck__card--discard-pile').html($cardImg).addClass('deck__card--discard-pile--has-card');
+		} else {
+			$('.deck__card--discard-pile').html('').removeClass('deck__card--discard-pile--has-card');
 		}
-
 	}
 
 	/**
-	 * Get the HTML to show for the player details in the headline.
+	 * Handle errors that will break the UI by offering to reset the game.
+	 *
+	 * API stores deck for 2 weeks. Theoretically a person
+	 * could have a game saved in localStorage longer than that, we'd fail
+	 * when attempting to reload it, for example.
+	 *
+	 * This is a catch-all for misc API errors/etc.
+	 *
+	 * @param {string=} messageDetails - if set, use this.
 	 * 
-	 * @param  {Player} activePlayer
-	 * @return {string}
 	 */
-	getHeadlinePlayer(activePlayer) {
-		return activePlayer.role + ' (' + activePlayer.name + '):';
-	}
-
-	/**
-	 * Get the HTML to show for the instruction in the headline.
-	 * 
-	 * @param  {Player} activePlayer
-	 * @return {string}
-	 */
-	getHeadlineInstruction(activePlayer) {
-		if (activePlayer.role === ROLE_GUESSER) {
-			return 'take a guess...';
+	error(messageDetails) {
+		let errorMessage = 'Uh oh! There was a problem with your game. Start a new game?';
+		if (messageDetails) {
+			errorMessage = messageDetails + ' Start a new game?';
 		}
-		return 'draw a card...';
+		vex.dialog.confirm({
+			message: errorMessage,
+			callback: function(value) {
+				if (value) {
+					store.clearGame();
+					window.location.reload();
+				}
+			}
+		});
 	}
 };
 module.exports = Game;

@@ -69,7 +69,8 @@ class Deck {
 					this.update(data);
 					this.vent.pub('drawCard');
 				} else {
-					//TODO
+					console.log(data);
+					this.vent.pub('error', 'Unable to draw a new card.');
 				}
 			});
 	}
@@ -160,5 +161,8 @@ class Deck {
 		return currVal > prevVal;
 	}
 
+	clearActiveCard() {
+		this.activeCard = null;
+	}
 };
 module.exports = Deck;

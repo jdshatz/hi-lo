@@ -8,3 +8,9 @@
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#{$color1}', endColorstr='#{$color2}',GradientType=0);
     background-color: $color1;
 }
+
+@mixin transition($target: "all", $speed: $animation-speed, $ease: "ease") {
+	-moz-transition: $target $speed $ease;
+	-webkit-transition: $target $speed $ease;
+	transition: $target $speed $ease;
+}

@@ -1,4 +1,6 @@
 import $ from 'jquery';
+import roles from '../../modules/roles';
+
 const ACTIVE_CLASS = 'player--active';
 
 /**
@@ -27,21 +29,91 @@ class Player {
 	toggle() {
 		this.active = !this.active;
 		this.$el.toggleClass(ACTIVE_CLASS, this.active);
+		this.cleanThisUpWhenNotTired();
 	}
 
-	/**
-	 * The element exists in the DOM, this is technically
-	 * just filling in required vals.
-	 */
-	render() {
-		if (this.active) {
-			this.$el.addClass(ACTIVE_CLASS);
+	cleanThisUpWhenNotTired() {
+		//clean this up.
+		if (this.active && this.id === 'player2') {
+			$('body').addClass('body--player2-active');
+		} else {
+			$('body').removeClass('body--player2-active');
 		}
 	}
 
-	updateGuess(guess) {
-		this.guessCount += 1;
+	/**
+	 * Switch between dealer and player.
+	 * @return {self}
+	 */
+	switchRole() {
+		if (this.role === roles.ROLE_GUESSER) {
+			this.role = roles.ROLE_DEALER;
+		} else {
+			this.role = roles.ROLE_GUESSER;
+		}
+		return this;
+	}
+
+	/**
+	 * All wrapper els existing in the DOM: this will fill in required vals.
+	 */
+	render() {
+		this.cleanThisUpWhenNotTired();
+		if (this.active) {
+			this.$el.addClass(ACTIVE_CLASS);
+		}
+
+		let $points = this.$el.find('.player__points');
+		$points.find('span').html(this.score);
+		$points.find('em').html(this.score === 1 ? 'point' : 'points');
+
+		this.$el.find('.role').html(this.role);
+		this.$el.find('.name').html(this.name);
+	}
+
+	clearGuess() {
+		this.setGuessCount(0);
+		this.setGuess(null);
+		return this;
+	}
+
+	/**
+	 * Set guess
+	 * @param {string|null}
+	 */
+	setGuess(guess) {
+		//TODO: should throw if string and invalid.
 		this.guess = guess;
+		return this;
+	}
+
+	setGuessCount(num) {
+		this.guessCount = num;
+		return this;
+	}
+
+	setScore(num) {
+		this.score = num;
+		return this;
+	}
+
+	/**
+	 * Show a headline specific to the player and current role, name.
+	 * @return {string}
+	 */
+	getHeadline() {
+		return this.role + ' (' + this.name + '):';
+	}
+
+	/**
+	 * Show a secondary headline specific to the player's current role
+	 * @return {string}
+	 */
+	getSecondaryHeadline() {
+		if (this.role === roles.ROLE_GUESSER) {
+			return 'take a guess...';
+		}
+		return 'draw a card...';
 	}
 };
 module.exports = Player;
