@@ -7,3 +7,21 @@
 .clearfix:after, .clear {
     clear: both;
 }
+
+.show-media-lg-only {
+    display: block;
+}
+
+.show-media-non-lg-only {
+    display: none;
+}
+
+@media #{$media-sm}, #{$media-med} {
+    .show-media-lg-only {
+        display: none;
+    }
+
+    .show-media-non-lg-only {
+        display: block;
+    }
+}

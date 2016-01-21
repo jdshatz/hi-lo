@@ -1,0 +1,45 @@
+.rules {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    background: #FFF;
+    padding: 2em;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    position: fixed;
+    .rules--active & {
+        display: block;
+    }
+
+    ol, ul {
+    	margin: 1em 0 0 2em;
+    }
+}
+
+.close-rules {
+	font-size: 2em;
+	position: absolute;
+	right: 0;
+	top: 0;
+	padding: 0.25em 0.5em 0.4em;
+	background: #ccc;
+}
+
+.page-mask {
+	display: none;
+	width: 100%;
+	top: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.5);
+	position: fixed;
+    .rules--active & {
+        display: block;
+    }
+}
+
+@media #{$media-lg} {
+	.rules {
+		width: 50%;
+	}
+}

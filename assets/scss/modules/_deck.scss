@@ -1,5 +1,5 @@
 .deck {
-	margin: 10vh auto 0;
+	margin: 6em auto 0;
 	width: 650px;
 	text-align: center;
 }
@@ -15,7 +15,7 @@
 	height: 278px;
 	border: 1px solid #CCC;
 	border-radius: 12px;
-	margin: auto;
+	margin: 0 auto 0.5em;
 }
 
 .deck__card--discard-pile--has-card {
@@ -30,16 +30,37 @@
 
 .deck__card--draw-pile {
 	background: #CCC;
-	margin-bottom: 0.5em;
 }
 
-.points-otl-wrapper {
+.points-otl--lg {
 	margin: 40% auto;
 	border: 1px solid #CCC;
 	padding: 2em 1em 3em;
+
+	span {
+		text-transform: uppercase;
+		font-size: 0.9em;
+	}
+
+	.points-otl__point-value {
+		display: block;
+		font-size: 3em;
+	}
 }
 
-.points-otl {
-	display: block;
-	font-size: 3em;
+@media #{$media-sm}, #{$media-med} {
+	.deck__card {
+		margin-left: 0;
+	}
+}
+
+@media #{$media-sm} {
+	.deck {
+		margin-left: 0;
+		width: auto;
+	}
+	.deck__card, .deck__card-img {
+		width: 120px;
+		height: 167px;
+	}
 }

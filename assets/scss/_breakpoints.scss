@@ -1,0 +1,23 @@
+$media-sm: "(max-width: 500px)";
+$media-med: "(min-width: 501px) and (max-width: 799px)";
+$media-lg: "(min-width: 800px)";
+
+
+/* debug breakpoints */
+// @media #{$media-sm} {
+//     body {
+//         background: yellow !important;
+//     }
+// }
+
+// @media #{$media-med} {
+//     body {
+//         background: orange !important;
+//     }
+// }
+
+// @media #{$media-lg} {
+//     body {
+//         background: red !important;
+//     }
+// }

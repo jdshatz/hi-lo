@@ -2,6 +2,7 @@ import $ from 'jquery';
 import roles from '../../modules/roles';
 
 const ACTIVE_CLASS = 'player--active';
+const SECOND_PLAYER_ACTIVE = 'body--player2-active';
 
 /**
  * Each game has players.
@@ -28,17 +29,8 @@ class Player {
 	 */
 	toggle() {
 		this.active = !this.active;
-		this.$el.toggleClass(ACTIVE_CLASS, this.active);
-		this.cleanThisUpWhenNotTired();
-	}
-
-	cleanThisUpWhenNotTired() {
-		//clean this up.
-		if (this.active && this.id === 'player2') {
-			$('body').addClass('body--player2-active');
-		} else {
-			$('body').removeClass('body--player2-active');
-		}
+		this.toggleActiveClasses();
+		return this;
 	}
 
 	/**
@@ -55,22 +47,34 @@ class Player {
 	}
 
 	/**
+	 * Toggle active class on element, and
+	 * if second player is active, add body class.
+	 */
+	toggleActiveClasses() {
+		this.$el.toggleClass(ACTIVE_CLASS, this.active);
+		if (this.id === 'player2') {
+			$('body').toggleClass(SECOND_PLAYER_ACTIVE, this.active);
+		}
+	}
+
+	/**
 	 * All wrapper els existing in the DOM: this will fill in required vals.
 	 */
 	render() {
-		this.cleanThisUpWhenNotTired();
-		if (this.active) {
-			this.$el.addClass(ACTIVE_CLASS);
-		}
+		this.toggleActiveClasses();
 
 		let $points = this.$el.find('.player__points');
 		$points.find('span').html(this.score);
 		$points.find('em').html(this.score === 1 ? 'point' : 'points');
 
-		this.$el.find('.role').html(this.role);
-		this.$el.find('.name').html(this.name);
+		this.$el.find('.player__role').html(this.role);
+		this.$el.find('.player__name').html(this.name);
+		return this;
 	}
 
+	/**
+	 * @return {self}
+	 */
 	clearGuess() {
 		this.setGuessCount(0);
 		this.setGuess(null);
@@ -82,16 +86,21 @@ class Player {
 	 * @param {string|null}
 	 */
 	setGuess(guess) {
-		//TODO: should throw if string and invalid.
 		this.guess = guess;
 		return this;
 	}
 
+	/**
+	 * @param {number} num
+	 */
 	setGuessCount(num) {
 		this.guessCount = num;
 		return this;
 	}
 
+	/**
+	 * @param {number} num
+	 */
 	setScore(num) {
 		this.score = num;
 		return this;

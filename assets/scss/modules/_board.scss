@@ -1,11 +1,33 @@
 .board {
-	background: $color-near-white;
-	min-height: 60vh;
-	float: left;
-	width: calc(100% - 2em);
-	padding: 3em 1em 6em;
+    background: $color-near-white;
+    min-height: 44em;
+    float: left;
+    width: 100%;
+    padding: 0 0 1em 0;
 }
 
 .headline {
-	margin-bottom: 0;
+    text-align: center;
+    margin: 1em 0 0.5em;
+}
+
+@media #{$media-sm}, #{$media-med} {
+	body {
+		font-size: 14px;
+	}
+
+	.headline {
+		text-align: left;
+
+		span {
+			display: block;
+		}
+	}
+
+	.board {
+		width: calc(100% - 2em);
+		min-height: auto;
+		padding: 0 1em 3em;
+		border-bottom: 3px solid #666;
+	}
 }

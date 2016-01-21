@@ -4,12 +4,16 @@ import Deck from '../deck';
 import store from '../../modules/store';
 import vex from '../../plugins/vex';
 import roles from '../../modules/roles';
+import flash from '../../modules/flash';
 
-const defaultPlayerCount = 2; //other places in this app assume this number so this isn't really helpful...
-
+const playerCount = 2;
 const GUESS_HI = 'hi';
 const GUESS_LO = 'lo';
 
+
+/**
+ * A game controls the entire app. All other objects are children of a Game.
+ */
 class Game {
 	/**
 	 * Create a new game
@@ -35,12 +39,13 @@ class Game {
 		this.vent.sub('drawCard', () => this.onDrawCard());
 		this.vent.sub('error', (error) => this.error(error));
 
-		var self = this;
-		$('.deck__card--draw-pile').on('click', function(event) {
+		$('.deck__card--draw-pile').on('click', (event) => {
 			event.preventDefault();
-			self.onDrawPileClick();
+			this.onDrawPileClick();
 		});
 
+
+		var self = this;
 		$('.guess__buttons .button').on('click', function(event) {
 			event.preventDefault();
 			var $this = $(this);
@@ -118,13 +123,16 @@ class Game {
 	}
 
 	onCorrectGuess() {
+		this.renderDeck();
 		this.showGuessResult(true);
-		this.pointsOnTheLine += 1;
-		this.switchPlayers();
+
+		setTimeout(() => {
+			this.pointsOnTheLine += 1;
+			this.switchPlayers();
+		}, flash.DISPLAY_DURATION);
 	}
 
 	onIncorrectGuess(inactivePlayer) {
-		$('.headline, .guess').hide();
 		this.render();
 		this.showGuessResult(false);
 		inactivePlayer
@@ -138,14 +146,14 @@ class Game {
 		setTimeout(() => {
 			this.pointsOnTheLine = 0;
 			this.deck.clearActiveCard();
-			$('.headline, .guess').show();
 			this.render();
-		}, 1500);
+		}, flash.DISPLAY_DURATION);
 	}
 
 	showGuessResult(isCorrect) {
-		//TODO: now, make this pretty.
-		vex.dialog.alert(isCorrect ? 'Correct!' : 'Wrong!');
+		let message = isCorrect ? 'Correct!' : 'Wrong!';
+		let type = isCorrect ? flash.TYPE_SUCCESS : flash.TYPE_ERROR;
+		flash.show(message, type);
 	}
 
 	/**
@@ -185,7 +193,7 @@ class Game {
 			});
 		} else {
 			var i;
-			for (i = 1; i <= defaultPlayerCount; i++) {
+			for (i = 1; i <= playerCount; i++) {
 				players.push(this.createPlayer({
 					vent: this.vent,
 					id: 'player' + i,
@@ -253,12 +261,21 @@ class Game {
 		this.players.forEach((player) => player.switchRole().render());
 	}
 
+	/**
+	 * Enable/disable the pass btn
+	 * @param  {Boolean} disable
+	 */
 	togglePassPrivileges(disable) {
 		$('.button-pass').attr('disabled', disable);
 		$('.pass-label').toggleClass('pass-label--disabled', disable);
 	}
 
-	getRemainingGuessesText(guessCount) {
+	/**
+	 * Returns pass hint text; slightly different depending on guess count.
+	 * @param  {number} guessCount
+	 * @return {string}
+	 */
+	getPassHint(guessCount) {
 		if (guessCount == 0) {
 			return '3 correct guesses in a row';
 		} else if (guessCount == 1) {
@@ -295,7 +312,7 @@ class Game {
 		if (activePlayer.role === roles.ROLE_GUESSER) {
 			if (activePlayer.guessCount < 3) {
 				$guess.find('.guess__hint').show();
-				$guess.find('.remaining-guesses-to-pass').html(this.getRemainingGuessesText(activePlayer.guessCount));
+				$guess.find('.remaining-guesses-to-pass').html(this.getPassHint(activePlayer.guessCount));
 				this.togglePassPrivileges(true);
 			} else {
 				$guess.find('.guess__hint').hide();
@@ -329,16 +346,7 @@ class Game {
 	 * -points on the line
 	 */
 	renderDeck() {
-		let $pointsOnTheLineWrapper = $('.points-otl-wrapper');
-		$pointsOnTheLineWrapper.find('.points-otl').html(this.pointsOnTheLine);
-
-		//TODO: cleanup.
-		if (this.pointsOnTheLine === 1) {
-			$pointsOnTheLineWrapper.find('span').text('point on the line');
-		} else {
-			$pointsOnTheLineWrapper.find('span').text('points on the line');
-		}
-
+		this.renderPointsOtl();
 		let cardsLeft = this.deck.remaining || 52; //we don't always have a deck here...(so really, shoud move this.)
 		cardsLeft += (cardsLeft === 1) ? ' card left' : ' cards left';
 		$('.cards-left').html(cardsLeft);
@@ -354,6 +362,19 @@ class Game {
 		} else {
 			$('.deck__card--discard-pile').html('').removeClass('deck__card--discard-pile--has-card');
 		}
+	}
+
+	/**
+	 * Render details about points on the line.
+	 */
+	renderPointsOtl() {
+		var $pointsOnTheLineWrapper = $('.points-otl');
+		var suffix = 'points on the line';
+		if (this.pointsOnTheLine === 1) {
+			suffix = 'point on the line';
+		}
+		$pointsOnTheLineWrapper.find('.points-otl__point-value').html(this.pointsOnTheLine);
+		$pointsOnTheLineWrapper.find('.points-otl__suffix').text(suffix);
 	}
 
 	/**

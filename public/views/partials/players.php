@@ -7,8 +7,8 @@
 					<span></span>
 					<em></em>
 				</div>
-				<h3 class="name"></h3>
-				<h4 class="role"></h4>
+				<h3 class="player__name"></h3>
+				<h4 class="player__role"></h4>
 			</div>
 		</li>
 	<?php } ?>

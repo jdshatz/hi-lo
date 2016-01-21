@@ -1,0 +1,39 @@
+.flash {
+	position: absolute;
+	width: 100%;
+    visibility: hidden;
+    margin-top: 14.5em;
+
+    &--active {
+    	visibility: visible;
+    }
+}
+
+.flash__content {
+	@include transition(all, 200ms, ease-in-out);
+	border: 1px solid rgba(255, 255, 255, 0.68);
+	border-radius: 3px;
+	box-shadow: 1px 1px 15px #4C4C4C;
+	line-height: 2em;
+	overflow: hidden;
+	height: 0;
+	opacity: 0;
+	margin: auto;
+	width: 540px;
+    max-width: 80%;
+    text-align: center;
+    background: #247517;
+    font-size: 3em;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 1px 1px 1px #000;
+
+    .flash--active & {
+    	opacity: 1;
+    		height: 2em;
+    }
+
+    .flash--error & {
+    	background: #A02323;
+    }
+}

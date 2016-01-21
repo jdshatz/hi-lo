@@ -16,8 +16,10 @@ Object.assign(gameOptions, {
 let game = new Game(gameOptions);
 game.render();
 
-//temp debug flag:
-window.DEBUG_hilo = game;
+//debug info:
+if (window.location.href.indexOf('debug') !== -1) {
+	window.DEBUG_HILO = game;
+}
 
 $(function() {
 	nav.init();
