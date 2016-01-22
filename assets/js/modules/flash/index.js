@@ -5,10 +5,10 @@ import $ from 'jquery';
  * @type {Object}
  */
 var flash = {
-	DISPLAY_DURATION: 1500,
+	DISPLAY_DURATION: 2000,
 	TYPE_ERROR: 'error',
 	TYPE_SUCCESS: 'success',
-	ACTIVE_CLASS: 'flash--active',
+	ACTIVE_CLASS: 'body--has-flash',
 
 	/**
 	 * Show a flash of info onscreen for a brief period.
@@ -16,9 +16,14 @@ var flash = {
 	 * @param {string} type
 	 */
 	show: function(message, type) {
-		let $flash = this.get();
-		$flash.toggleClass('flash--error', type === this.TYPE_ERROR).find('.flash__content').html(message);
-		$flash.addClass(this.ACTIVE_CLASS);
+		this.get()
+			.toggleClass('flash--error', type === this.TYPE_ERROR)
+			.find('.flash__content')
+			.html(message);
+
+		//set the active class on the wrapper because we hide a few things when it's visible.
+		this.getWrapper().addClass(this.ACTIVE_CLASS);
+
 		setTimeout(() => this.hide(), this.DISPLAY_DURATION);
 	},
 
@@ -26,7 +31,7 @@ var flash = {
 	 * Hide flash.
 	 */
 	hide: function() {
-		this.get().removeClass(this.ACTIVE_CLASS);
+		this.getWrapper().removeClass(this.ACTIVE_CLASS);
 	},
 
 	/**
@@ -39,6 +44,18 @@ var flash = {
 			this.$el = $('.flash');
 		}
 		return this.$el;
+	},
+
+	/**
+	 * Cache ref to wrapper el.
+	 * 
+	 * @return {object}
+	 */
+	getWrapper: function() {
+		if (!this.$wrapper) {
+			this.$wrapper = $('body');
+		}
+		return this.$wrapper;
 	}
 };
 

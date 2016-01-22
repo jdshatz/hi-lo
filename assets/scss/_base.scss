@@ -1,5 +1,5 @@
 body {
-    background: lighten($color-1, 30%);
+    background: $color-1 url("#{$image-dir}congruent_outline.png") repeat 0 0;
 	color: $text-color;
 	font-family: $font-family;
 	font-size: $base-font-size;

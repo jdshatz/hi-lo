@@ -39,13 +39,20 @@ class Game {
 		this.vent.sub('drawCard', () => this.onDrawCard());
 		this.vent.sub('error', (error) => this.error(error));
 
-		$('.deck__card--draw-pile').on('click', (event) => {
+		var self = this;
+		$('.deck__card--draw-pile').on('click', function(event){
 			event.preventDefault();
-			this.onDrawPileClick();
+			var $this = $(this);
+			//prevent rapid fire clicks from triggering multiple draws.
+			if (!$this.hasClass('clicked')) {
+				self.onDrawPileClick();
+			}
+			$this.addClass('clicked');
+			setTimeout(() => {
+				$this.removeClass('clicked');
+			}, 1500);
 		});
 
-
-		var self = this;
 		$('.guess__buttons .button').on('click', function(event) {
 			event.preventDefault();
 			var $this = $(this);
@@ -55,6 +62,11 @@ class Game {
 				self.submitGuess($this.hasClass('button-lower') ? GUESS_LO : GUESS_HI);
 			}
 		});
+
+		$('.alert-link').on('click', function(event){
+			event.preventDefault();
+			vex.dialog.alert($(this).attr('data-alert-content'));
+		});
 	}
 
 	/**
@@ -62,10 +74,11 @@ class Game {
 	 * @param  {string} guess GUESS_LO|GUESS_HI
 	 */
 	submitGuess(guess) {
+		console.log("TODO: guess counts are off");
 		let activePlayer = this.getActivePlayer();
 		activePlayer
 			.setGuess(guess)
-			.setGuessCount(activePlayer.guessCount + 1);
+			.setGuessCount(activePlayer.guessCount > 2 ? 0 : activePlayer.guessCount + 1);
 		this.switchPlayers();
 	}
 
@@ -95,6 +108,7 @@ class Game {
 	 */
 	onDrawCard() {
 		let inactivePlayer = this.getInactivePlayer();
+		console.log(this);
 		if (this.deck.remaining === 1) {
 			this.onLastCardDraw();
 		} else if (inactivePlayer.guess) {
@@ -129,14 +143,14 @@ class Game {
 		setTimeout(() => {
 			this.pointsOnTheLine += 1;
 			this.switchPlayers();
-		}, flash.DISPLAY_DURATION);
+		}, flash.DISPLAY_DURATION + 100);
 	}
 
 	onIncorrectGuess(inactivePlayer) {
 		this.render();
 		this.showGuessResult(false);
 		inactivePlayer
-			.setScore(inactivePlayer.score + this.pointsOnTheLine)
+			.incrementScore(this.pointsOnTheLine)
 			.clearGuess()
 			.render();
 		this.clearDiscardPile();
@@ -271,23 +285,10 @@ class Game {
 	}
 
 	/**
-	 * Returns pass hint text; slightly different depending on guess count.
-	 * @param  {number} guessCount
-	 * @return {string}
-	 */
-	getPassHint(guessCount) {
-		if (guessCount == 0) {
-			return '3 correct guesses in a row';
-		} else if (guessCount == 1) {
-			return '2 more correct guesses in a row';
-		}
-		return '1 more correct guess';
-	}
-
-	/**
 	 * Fills in UI based on state of the game.
 	 */
 	render() {
+		$('.odometer').html(Math.floor(Math.random() * 100));
 		var activePlayer = this.getActivePlayer();
 		this.renderHeadline(activePlayer);
 		this.renderGuess(activePlayer);
@@ -310,14 +311,7 @@ class Game {
 		//there are 3 possible cases here that require 3 different UIs.
 		// a - guesser. b - dealer, no guess has been made. c - dealer - with active guess.
 		if (activePlayer.role === roles.ROLE_GUESSER) {
-			if (activePlayer.guessCount < 3) {
-				$guess.find('.guess__hint').show();
-				$guess.find('.remaining-guesses-to-pass').html(this.getPassHint(activePlayer.guessCount));
-				this.togglePassPrivileges(true);
-			} else {
-				$guess.find('.guess__hint').hide();
-				this.togglePassPrivileges(false);
-			}
+			this.togglePassPrivileges(activePlayer.guessCount < 3);
 			$guess.find('.guess__info--guesser').show();
 		} else if (this.deck.activeCard) {
 			let inactivePlayer = this.getInactivePlayer();
@@ -335,8 +329,8 @@ class Game {
 	 */
 	renderHeadline(activePlayer) {
 		var $headline = $('.headline');
-		$headline.find('.headline__player').html(activePlayer.getHeadline());
-		$headline.find('.headline__instruction').html(activePlayer.getSecondaryHeadline());
+		$headline.find('.headline__player').html(activePlayer.getHeadlineHtml());
+		$headline.find('.headline__instruction').html(activePlayer.getSecondaryHeadlineHtml());
 	}
 
 	/**
@@ -369,12 +363,8 @@ class Game {
 	 */
 	renderPointsOtl() {
 		var $pointsOnTheLineWrapper = $('.points-otl');
-		var suffix = 'points on the line';
-		if (this.pointsOnTheLine === 1) {
-			suffix = 'point on the line';
-		}
 		$pointsOnTheLineWrapper.find('.points-otl__point-value').html(this.pointsOnTheLine);
-		$pointsOnTheLineWrapper.find('.points-otl__suffix').text(suffix);
+		$pointsOnTheLineWrapper.find('.points-otl__text').text(this.pointsOnTheLine === 1 ? 'point' : 'points');
 	}
 
 	/**

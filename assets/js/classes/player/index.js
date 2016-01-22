@@ -3,6 +3,7 @@ import roles from '../../modules/roles';
 
 const ACTIVE_CLASS = 'player--active';
 const SECOND_PLAYER_ACTIVE = 'body--player2-active';
+const HIGHLIGHT_SCORE_CLASS = 'player--highlight-score';
 
 /**
  * Each game has players.
@@ -67,7 +68,7 @@ class Player {
 		$points.find('span').html(this.score);
 		$points.find('em').html(this.score === 1 ? 'point' : 'points');
 
-		this.$el.find('.player__role').html(this.role);
+		this.$el.find('.player__role').html(this.getRoleHtml());
 		this.$el.find('.player__name').html(this.name);
 		return this;
 	}
@@ -101,16 +102,27 @@ class Player {
 	/**
 	 * @param {number} num
 	 */
-	setScore(num) {
-		this.score = num;
+	incrementScore(num) {
+		this.score += num;
+		this.highlightScore();
 		return this;
+	}
+
+	/**
+	 * Toggle class to highlight change to score.
+	 */
+	highlightScore() {
+		this.$el.addClass(HIGHLIGHT_SCORE_CLASS);
+		setTimeout(() => {
+			this.$el.removeClass(HIGHLIGHT_SCORE_CLASS);
+		}, 1500)
 	}
 
 	/**
 	 * Show a headline specific to the player and current role, name.
 	 * @return {string}
 	 */
-	getHeadline() {
+	getHeadlineHtml() {
 		return this.role + ' (' + this.name + '):';
 	}
 
@@ -118,11 +130,32 @@ class Player {
 	 * Show a secondary headline specific to the player's current role
 	 * @return {string}
 	 */
-	getSecondaryHeadline() {
+	getSecondaryHeadlineHtml() {
 		if (this.role === roles.ROLE_GUESSER) {
 			return 'take a guess...';
 		}
 		return 'draw a card...';
+	}
+
+	getRoleHtml() {
+		if (this.role === roles.ROLE_DEALER) {
+			return 'Dealer';
+		}
+
+		if (this.guessCount === 3) {
+			return 'Guesser';
+		} 
+		console.log(this);
+		console.log(3 - this.guessCount);
+		let html = 'Guesser - needs <b>' + (3 - this.guessCount) + '</b> ';
+		html += this.buildAlertHintLink('correct guesses to pass') + '.';
+		return html;
+	}
+
+	buildAlertHintLink(text) {
+		let alert = "When you have three correct guesses in a row, you will be allowed to pass.";
+		alert += " It is to your advantage to pass, so you can avoid gaining points.";
+		return "<a href='#' class='alert-link' data-alert-content='" + alert + "'>" + text + "</a>";
 	}
 };
 module.exports = Player;

@@ -4,11 +4,14 @@
 		<li class="player" id="player<?= $i; ?>">
 			<div class="player__details">
 				<div class="player__points">
-					<span></span>
-					<em></em>
+					<div class="player__points-inner">
+						<span></span>
+						<em></em>
+					</div>
 				</div>
 				<h3 class="player__name"></h3>
 				<h4 class="player__role"></h4>
+				<label class="player__hint"></label>
 			</div>
 		</li>
 	<?php } ?>

@@ -65,11 +65,11 @@ class Deck {
 	draw() {
 		$.when($.ajax(this.getDrawUrl(this.id)))
 			.then((data, textStatus, jqXHR) => {
+				console.log(data);
 				if (data.success) {
 					this.update(data);
 					this.vent.pub('drawCard');
 				} else {
-					console.log(data);
 					this.vent.pub('error', 'Unable to draw a new card.');
 				}
 			});

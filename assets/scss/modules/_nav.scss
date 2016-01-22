@@ -1,28 +1,46 @@
 .nav {
-	background: $color-1 url("#{$image-dir}congruent_outline.png") repeat 0 0;
-	padding: 1em;
-	position: fixed;
-	width: calc(100% - 2em);
+	//background: $color-1 url("#{$image-dir}congruent_outline.png") repeat 0 0;
+	background: #245A27;
+    padding: 1em;
+    position: fixed;
+    width: calc(100% - 2em);
+    box-shadow: 0px 0px 3px #4E4E4E;
+    border-bottom: 2px dashed rgba(255, 255, 255, 0.39);
 
 	a {
 		text-decoration: none;
 		color: $color-near-white;
-
-		&:hover {
-			text-decoration: underline;
-		}
 	}
 }
 
 .nav-logo {
 	font-weight: 500;
-	font-size: 1.1em;
+	position: absolute;
+	background: url("#{$image-dir}cards-logo.png") no-repeat 0 0;
+    display: block;
+    height: 44px;
+    padding-left: 20px;
+    top: 3px;
+    left: 0;
+    font-size: 1.85em;
+    font-family: 'Pacifico', 'Raleway', 'Helvetica', 'Helvetica Neue', 'Arial', sans-serif;;
+    line-height: 43px;
+
+    &:hover {
+    	text-decoration: none;
+    }
 }
 
 .nav-links {
 	list-style: none;
 	float: right;
 	font-size: 0.9em;
+
+	a {
+		&:hover {
+			text-decoration: underline;
+		}
+	}
 }
 
 .nav-links__item {

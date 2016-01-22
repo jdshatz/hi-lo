@@ -11,6 +11,5 @@
 			<label class="pass-label pass-label--disabled">Or</label>
 			<button class="button button-pass" type="button" title="Pass" disabled>Pass</button>
 		</div>
-		<p class="guess__hint">When you've gotten <span class="remaining-guesses-to-pass"></span>, you'll be allowed to pass.</p>
 	</div>
 </div>

@@ -2,9 +2,9 @@
 	position: absolute;
 	width: 100%;
     visibility: hidden;
-    margin-top: 14.5em;
+    margin-top: 27em;
 
-    &--active {
+    .body--has-flash & {
     	visibility: visible;
     }
 }
@@ -19,21 +19,21 @@
 	height: 0;
 	opacity: 0;
 	margin: auto;
-	width: 540px;
+	width: $content-width;
     max-width: 80%;
     text-align: center;
-    background: #247517;
+    background: $color-right;
     font-size: 3em;
     font-weight: bold;
-    color: #fff;
+    color: #FFF;
     text-shadow: 1px 1px 1px #000;
 
-    .flash--active & {
+    .body--has-flash & {
     	opacity: 1;
-    		height: 2em;
+    	height: 2em;
     }
 
     .flash--error & {
-    	background: #A02323;
+    	background: $color-wrong;
     }
 }
