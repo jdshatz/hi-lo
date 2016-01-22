@@ -1,26 +1,44 @@
-import $ from 'jquery';
 import Game from './classes/game';
 import store from './modules/store';
 import Preach from 'preach';
-import nav from './modules/nav';
+import './modules/nav';
 
-//setup game options.
-//create a single vent object to share around app for event management.
+/**
+ * Create a single global event object that we'll share throughout the app.
+ */
 let vent = new Preach();
-let gameOptions = store.loadGame();
-Object.assign(gameOptions, {
-	vent
-});
 
-//create game
-let game = new Game(gameOptions);
-game.render();
-
-//debug info:
-if (window.location.href.indexOf('debug') !== -1) {
-	window.DEBUG_HILO = game;
+/**
+ * Builds game options: loads game if one is set from storage
+ * and creates a single global event management object to share
+ * for the app.
+ * 
+ * @return {object} gameOptions
+ */
+var buildGameOptions = () => {
+	return Object.assign(store.loadGame(), {
+		vent
+	});
 }
 
-$(function() {
-	nav.init();
-});
+/**
+ * Setup the game
+ */
+var initGame = () => {
+	let opts = buildGameOptions();
+	let game = new Game(opts);
+
+	//if we have a stored deck, render. Otherwise, wait until we've
+	//created and loaded a new deck before rendering.
+	if (opts.deck) {
+		game.render();
+	}
+	vent.sub('appReady', () => game.render());
+
+	//debug info:
+	if (window.location.href.indexOf('debug') !== -1) {
+		window.DEBUG_HILO = game;
+	}
+}
+
+initGame();

@@ -33,7 +33,32 @@
     	height: 2em;
     }
 
+    .fa-thumbs-o-down {
+        display: none;
+    }
+
     .flash--error & {
     	background: $color-red;
+
+        .fa-thumbs-o-down {
+            display: block;
+        }
+
+        .fa-thumbs-o-up {
+            display: none;
+        }
+    }
+}
+
+
+.flash__icon {
+    color: lighten($color-green, 30%);
+    display: block;
+    padding: 0.5em;
+    position: absolute;
+    text-shadow: 0 0 0 transparent;
+
+    &.fa-thumbs-o-down {
+        color: lighten($color-red, 30%);
     }
 }

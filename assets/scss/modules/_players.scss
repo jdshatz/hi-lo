@@ -37,29 +37,40 @@
     padding: 1em;
     border: 5px solid rgba(255, 255, 255, 0.34);
     color: $color-light-grey;
+    @include transition();
+
     a {
         color: $color-light-grey;
+            &:hover {
+                color: lighten($color-light-blue, 20%);
+            }
     }
-    @include transition;
 
     .player--active & {
         background: $color-light-blue;
-        color: #FFF;
+        color: $color-dark-blue;
 
         a {
-            color: #FFF;
+            color: $color-dark-blue;
+            border-color: lighten($color-light-blue, 20%);
         }
     }
 }
 
 .player__points {
-    border-right: 1px solid $color-light-grey;
+    border-right: 1px solid $color-grey;
     padding-right: 1em;
     position: absolute;
     float: left;
+    min-width: 68px; //handle when stacked vertically with unequal contents.
+
+    .player--active & {
+        border-right-color: lighten($color-light-blue, 20%);
+    }
 }
 
 .player__points-inner {
+    color: #FFF;
     position: relative;
     text-align: center;
     padding: 0.5em 1em 1em;
@@ -69,7 +80,7 @@
         font-size: 2em;
         .player--highlight-score & {
             //duration/delay/iterations
-            animation: 500ms 20ms 2 keyframeAnimation1 ease-out;
+            animation: 500ms 20ms 3 keyframeAnimation1 ease-out;
         }
     }
 
@@ -112,6 +123,29 @@
 
     .body--player2-active & {
         left: 72%;
+    }
+}
+
+
+@media #{$media-lg} {
+    .player__role, .player__name {
+        text-align: left;
+        padding-left: 125px;
+    }
+
+    .player__details {
+        min-height: 6em;
+    }
+}
+
+@media #{$media-sm} {
+    .player__role, .player__name {
+        text-align: left;
+        padding-left: 100px;
+    }
+
+    .player__details {
+        min-height: 6em;
     }
 }
 

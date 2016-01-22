@@ -1,104 +1,138 @@
 .deck {
-	margin: 6em auto 0;
-	width: $content-width;
-	text-align: center;
+    margin: 6em auto 0;
+    width: $content-width;
+    text-align: center;
 }
 
 .deck__item {
-	float: left;
-	margin-right: 1em;
+    float: left;
+    margin-right: 1em;
 }
 
 .deck__card {
-	background: #FFF;
-	display: block;
-	width: 200px;
-	height: 278px;
-	border: 2px solid #CCC;
-	border-radius: 15px;
-	margin: 0 auto 0.5em;
-	box-sizing: border-box;
+    background: #F3F3F3;
+    display: block;
+    width: 200px;
+    height: 278px;
+    border: 2px solid #CCC;
+    border-radius: 15px;
+    margin: 0 auto 0.5em;
+    box-sizing: border-box;
+
+    .card {
+        display: none;
+    }
+
+    label {
+        display: block;
+        font-size: 0.9em;
+        color: $color-grey;
+        margin-top: 124px;
+        text-shadow: 1px 1px 1px #FFF;
+    }
 }
 
 .deck__card--discard-pile--has-card {
-	border-color: #FFF;
+    border-color: #FFF;
+
+    .card {
+        display: block;
+    }
+
+    label {
+        display: none;
+    }
 }
 
 .deck__card-img {
-	@include transition();
-	width: 200px;
-	max-width: 100%;
-	height: auto;
+    width: 200px;
+    max-width: 100%;
+    height: auto;
 }
 
 .deck__card--draw-pile {
-	@include transition();
-	border: 1px solid $color-dark-blue;
-	box-shadow: 2px 1px 1px #ccc;
+    @include transition;
 
-	&:hover {
-		background: rgba($color-light-blue, 0.2);
-	}
+    border: 1px solid $color-dark-blue;
+    box-shadow: 2px 1px 1px #ccc;
+
+    &:hover {
+        background: rgba($color-light-blue, 0.2);
+    }
 }
 
 .deck-card-back {
-	background: #FFF url("#{$image-dir}card-backs/dark-blue.png") repeat 0 0;
-	background-size: cover;
-	height: 258px;
-	width: 180px;
-	margin: auto;
-	border-radius: 10px;
-	border: 3px solid $color-dark-blue; 
-	box-shadow: 2px 1px 1px #CCC inset;
-	margin-top: 5px;
-	position: relative;
+    background: #FFF url("#{$image-dir}card-backs/dark-blue.png") repeat 0 0;
+    background-size: cover;
+    height: 258px;
+    width: 180px;
+    margin: auto;
+    border-radius: 10px;
+    border: 3px solid $color-dark-blue;
+    box-shadow: 2px 1px 1px #CCC inset;
+    margin-top: 5px;
+    position: relative;
+
+    .body--game-over & {
+        background: #FFF;
+    }
 }
 
 .points-otl--lg {
-	margin: 30% auto;
-	border: 1px solid $color-light-grey;
-	padding: 2em 1em 3em;
+    color: $color-green;
+    border-radius: 2px;
+    margin: 30% auto;
+    border: 1px solid $color-light-grey;
+    padding: 2em 1em 3em;
 
-	span, a {
-		text-transform: uppercase;
-		font-size: 0.9em;
-	}
+    span, a {
+        text-transform: uppercase;
+        font-size: 0.9em;
+    }
 
-	.points-otl__text, a {
-		color: $color-grey;
-	}
+    a {
+        color: $color-green;
 
-	.points-otl__point-value {
-		display: block;
-		font-size: 2.5em;
-		padding-bottom: 0.25em;
-	}
-}
+        &:hover {
+            color: $color-light-blue;
+        }
+    }
 
-.active-card-value, .active-card-suit {
-	text-transform: capitalize;
+    .points-otl__point-value {
+        color: $color-green;
+        display: block;
+        font-size: 2.5em;
+        padding-bottom: 0.25em;
+    }
 }
 
 @media #{$media-sm}, #{$media-med} {
-	.deck__card {
-		margin-left: 0;
-	}
+    .deck__card {
+        margin-left: 0;
+    }
 }
 
 @media #{$media-sm} {
-	.deck {
-		margin-left: 0;
-		width: auto;
-	}
-	.deck__card, .deck__card-img {
-		width: 120px;
-		height: 167px;
-		border-radius: 8px;
-	}
+    .deck {
+        margin-left: 0;
+        width: auto;
+    }
 
-	.deck-card-back {
-		width: 100px;
-		height: 147px;
-		border-radius: 6px;
-	}
+    .deck__card, .deck__card-img {
+        width: 120px;
+        height: 167px;
+        border-radius: 8px;
+    }
+
+    .deck__card {
+        label {
+            display: none;
+        }
+    }
+
+    .deck-card-back {
+        width: 100px;
+        height: 147px;
+        border-radius: 6px;
+    }
 }

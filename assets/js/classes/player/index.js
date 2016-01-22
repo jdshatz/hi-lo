@@ -131,12 +131,21 @@ class Player {
 	 * @return {string}
 	 */
 	getSecondaryHeadlineHtml() {
-		if (this.role === roles.ROLE_GUESSER) {
-			return 'take a guess...';
+		if (this.role === roles.ROLE_DEALER) {
+			return 'draw a card...';
+		} else if (this.guessCount === 3) {
+			return 'take a guess or pass...'
 		}
-		return 'draw a card...';
+		return 'take a guess...';
 	}
 
+	/**
+	 * Returns string to use for the role panel.
+	 * In the case of the dealer, it's simple; in the case of the
+	 * guesser, we show some info about guesses required to pass.
+	 * 
+	 * @return {string}
+	 */
 	getRoleHtml() {
 		if (this.role === roles.ROLE_DEALER) {
 			return 'Dealer';
@@ -144,18 +153,27 @@ class Player {
 
 		if (this.guessCount === 3) {
 			return 'Guesser';
-		} 
-		console.log(this);
-		console.log(3 - this.guessCount);
+		}
+
 		let html = 'Guesser - needs <b>' + (3 - this.guessCount) + '</b> ';
-		html += this.buildAlertHintLink('correct guesses to pass') + '.';
-		return html;
+		let guessText = 'correct guesses';
+		if (this.guessCount == 2) {
+			guessText = 'more correct guess';
+		} else if (this.guessCount == 1) {
+			guessText = 'more correct guesses';
+		}
+		return html + this.buildAlertHintLink(guessText + ' to pass') + '.';
 	}
 
-	buildAlertHintLink(text) {
+	/**
+	 * The hint link text is slightly different based on guess count.
+	 * @param  {string} linkText
+	 * @return {string}
+	 */
+	buildAlertHintLink(linkText) {
 		let alert = "When you have three correct guesses in a row, you will be allowed to pass.";
 		alert += " It is to your advantage to pass, so you can avoid gaining points.";
-		return "<a href='#' class='alert-link' data-alert-content='" + alert + "'>" + text + "</a>";
+		return "<a href='#' class='alert-link' data-alert-content='" + alert + "'>" + linkText + "</a>";
 	}
 };
 module.exports = Player;

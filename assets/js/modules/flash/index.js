@@ -18,7 +18,7 @@ var flash = {
 	show: function(message, type) {
 		this.get()
 			.toggleClass('flash--error', type === this.TYPE_ERROR)
-			.find('.flash__content')
+			.find('.flash__content span')
 			.html(message);
 
 		//set the active class on the wrapper because we hide a few things when it's visible.

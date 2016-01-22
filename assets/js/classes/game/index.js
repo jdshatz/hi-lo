@@ -9,6 +9,7 @@ import flash from '../../modules/flash';
 const playerCount = 2;
 const GUESS_HI = 'hi';
 const GUESS_LO = 'lo';
+const GAME_OVER_CLASS = 'body--game-over';
 
 
 /**
@@ -40,11 +41,12 @@ class Game {
 		this.vent.sub('error', (error) => this.error(error));
 
 		var self = this;
+		var $body = $('body');
 		$('.deck__card--draw-pile').on('click', function(event) {
 			event.preventDefault();
 			var $this = $(this);
-			//prevent rapid fire clicks from triggering multiple draws.
-			if (!$this.hasClass('clicked')) {
+			//prevent rapid fire clicks from triggering multiple draws, and ignore if game is over.
+			if (!$this.hasClass('clicked') && !$body.hasClass(GAME_OVER_CLASS)) {
 				self.onDrawPileClick();
 			}
 			$this.addClass('clicked');
@@ -63,7 +65,7 @@ class Game {
 			}
 		});
 
-		$('.alert-link').on('click', function(event) {
+		$(document).on('click', '.alert-link', function(event) {
 			event.preventDefault();
 			vex.dialog.alert($(this).attr('data-alert-content'));
 		});
@@ -74,11 +76,9 @@ class Game {
 	 * @param  {string} guess GUESS_LO|GUESS_HI
 	 */
 	submitGuess(guess) {
-		console.log("TODO: guess counts are off");
 		let activePlayer = this.getActivePlayer();
 		activePlayer
-			.setGuess(guess)
-			.setGuessCount(activePlayer.guessCount > 2 ? 0 : activePlayer.guessCount + 1);
+			.setGuess(guess);
 		this.switchPlayers();
 	}
 
@@ -110,55 +110,101 @@ class Game {
 	 */
 	onDrawCard() {
 		let inactivePlayer = this.getInactivePlayer();
-		console.log(this);
-		if (this.deck.remaining === 1) {
-			this.onLastCardDraw();
+
+		if (this.deck.remaining === 0) {
+			this.handleLastGuess(inactivePlayer);
 		} else if (inactivePlayer.guess) {
-			this.checkGuess(inactivePlayer);
+			this.handleGuess(inactivePlayer);
 		} else {
 			this.pointsOnTheLine += 1;
 			this.switchPlayers();
 		}
 	}
 
-	onLastCardDraw() {
-		//TODO.
-		//the game is over at this point, show some
-		//indication of this.
-		console.log(this);
-	}
-
 	/**
-	 * Check a guess to see if it's right or wrong and then handle results.
+	 * Handle guesses; used for all but the very last play.
 	 * @param  {Player} inactivePlayer
 	 */
-	checkGuess(inactivePlayer) {
-		let isHigher = this.deck.isActiveCardHigherThanPrev();
-		let isCorrect = isHigher ? inactivePlayer.guess === GUESS_HI : inactivePlayer.guess === GUESS_LO;
-		if (isCorrect) {
-			this.onCorrectGuess();
+	handleGuess(inactivePlayer) {
+		if (this.isGuessCorrect(inactivePlayer)) {
+			this.onCorrectGuess(inactivePlayer);
+			//give the flash a moment to show and start clearing before
+			//we swap turns.
+			setTimeout(() => {
+				this.pointsOnTheLine += 1;
+				this.switchPlayers();
+			}, flash.DISPLAY_DURATION + 100);
 		} else {
 			this.onIncorrectGuess(inactivePlayer);
 		}
 	}
 
 	/**
-	 * Handle a correct guess.
+	 * The last guess is handled slightly differently than the others, because
+	 * the game is over.
+	 * 
+	 * @param  {Player} inactivePlayer
 	 */
-	onCorrectGuess() {
-		this.renderDeck();
-		this.showGuessResult(true);
+	handleLastGuess(inactivePlayer) {
+		let isCorrect = this.isGuessCorrect(inactivePlayer);
+
+		if (isCorrect) {
+			this.onCorrectGuess(inactivePlayer);
+		} else {
+			this.onIncorrectGuess(inactivePlayer);
+		}
 
 		setTimeout(() => {
-			this.pointsOnTheLine += 1;
-			this.switchPlayers();
-		}, flash.DISPLAY_DURATION + 100);
+			this.gameOver();
+		}, flash.DISPLAY_DURATION);
+	}
+
+	/**
+	 * When the game is over, show the winner, add link
+	 * to start again, and clear existing game.
+	 */
+	gameOver() {
+		store.clearGame();
+
+		let winner = this.getWinner();
+		$('body').addClass(GAME_OVER_CLASS);
+		$('.player').removeClass('player--active');
+
+		let $headline = $('.headline');
+		$headline.find('.headline__player').html('Game Over! ');
+		$headline.find('.headline__instruction').html(winner.name + ' wins with a low score of ' + winner.score + '.');
+
+		let $subtitle = $('.guess__info--dealer');
+		$subtitle.find('h2').html('...looks like it\'s time to <a href="#" class="game-over-new-game">play again</a>!');
+		$subtitle.show();
+	}
+
+	/**
+	 * @param  {Player} inactivePlayer
+	 * @return {Boolean}
+	 */
+	isGuessCorrect(inactivePlayer) {
+		if (this.deck.isActiveCardHigherThanPrev()) {
+			return inactivePlayer.guess === GUESS_HI;
+		}
+		return inactivePlayer.guess === GUESS_LO;
+	}
+
+	/**
+	 * Handle a correct guess.
+	 *
+	 * @param {Player} inactivePlayer
+	 */
+	onCorrectGuess(inactivePlayer) {
+		this.deck.render(this.pointsOnTheLine);
+		this.showGuessResult(true);
+		inactivePlayer.setGuessCount(inactivePlayer.guessCount > 2 ? 0 : inactivePlayer.guessCount + 1);
 	}
 
 	/**
 	 * Handle an incorrect guess.
 	 * Update the inactivePlayer(the Guesser) score, show the results of the guess 
-	 * onscreen for a moment, and then clear results and move forward.
+	 * onscreen for a moment, and then clear results
 	 * 
 	 * @param  {Player} inactivePlayer
 	 */
@@ -281,13 +327,40 @@ class Game {
 	}
 
 	/**
+	 * Get player by id
+	 
+	 * @return {Player|undefined}
+	 */
+	getPlayerById(id) {
+		return this.players.find((player) => {
+			if (player.id === id) {
+				return player;
+			}
+		});
+	}
+
+	/**
+	 * Get the winning player.
+	 * @return {Player}
+	 */
+	getWinner() {
+		let player1 = this.getPlayerById('player1');
+		let player2 = this.getPlayerById('player2');
+
+		if (player1.score < player2.score) {
+			return player1;
+		}
+		return player2;
+	}
+
+	/**
 	 * Change the active player. This assumes that we have
 	 * 2 players in a game.
 	 * 
 	 * We'll always save game state each time this happens.
 	 */
 	switchPlayers() {
-		this.players.forEach((player) => player.toggle());
+		this.players.forEach((player) => player.toggle().render());
 		this.render();
 		this.save();
 	}
@@ -315,7 +388,7 @@ class Game {
 		var activePlayer = this.getActivePlayer();
 		this.renderHeadline(activePlayer);
 		this.renderGuess(activePlayer);
-		this.renderDeck();
+		this.deck.render(this.pointsOnTheLine);
 	}
 
 	/**
@@ -354,45 +427,6 @@ class Game {
 		var $headline = $('.headline');
 		$headline.find('.headline__player').html(activePlayer.getHeadlineHtml());
 		$headline.find('.headline__instruction').html(activePlayer.getSecondaryHeadlineHtml());
-	}
-
-	/**
-	 * Updates deck area of the UI.
-	 */
-	renderDeck() {
-		this.renderPointsOtl();
-		this.renderCardsLeft();
-		this.renderDiscardPile();
-	}
-
-	/**
-	 * Render the number of cards left.
-	 */
-	renderCardsLeft() {
-		let cardsLeft = this.deck.remaining || 52; //we don't always have a deck here...(so really, shoud move this.)
-		cardsLeft += (cardsLeft === 1) ? ' card left' : ' cards left';
-		$('.cards-left').html(cardsLeft);
-	}
-
-	renderDiscardPile() {
-		//this won't always be set if nothing in discard pile.
-		if (this.deck.activeCard) {
-			let card = this.deck.activeCard;
-			let $cardImg = $('<img>').prop('src', card.images.png).prop('alt', card.value + ' ' + card.suit.toLowerCase());
-			$cardImg.addClass('deck__card-img')
-			$('.deck__card--discard-pile').html($cardImg).addClass('deck__card--discard-pile--has-card');
-		} else {
-			$('.deck__card--discard-pile').html('').removeClass('deck__card--discard-pile--has-card');
-		}
-	}
-
-	/**
-	 * Render details about points on the line.
-	 */
-	renderPointsOtl() {
-		var $pointsOnTheLineWrapper = $('.points-otl');
-		$pointsOnTheLineWrapper.find('.points-otl__point-value').html(this.pointsOnTheLine);
-		$pointsOnTheLineWrapper.find('.points-otl__text').text(this.pointsOnTheLine === 1 ? 'point' : 'points');
 	}
 
 	/**

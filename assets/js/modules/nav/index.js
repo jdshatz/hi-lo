@@ -21,6 +21,8 @@ var nav = {
 	 * Bind a few event handlers for nav links, handle rules panel.
 	 */
 	init: function() {
+		var $doc = $(document);
+
 		$('.new-game').on('click', (event) => {
 			event.preventDefault();
 			vex.dialog.confirm({
@@ -39,10 +41,18 @@ var nav = {
 			this.toggleRules(true);
 		});
 
-		$(document).on('click', '.rules--active .page-mask, .close-rules', (event) => {
+		$doc.on('click', '.rules--active .page-mask, .close-rules', (event) => {
 			this.toggleRules(false);
+		});
+
+		$doc.on('click', '.game-over-new-game', (event) => {
+			event.preventDefault();
+			window.location.reload();
 		});
 	}
 };
 
+$(function() {
+	nav.init();
+});
 module.exports = nav;

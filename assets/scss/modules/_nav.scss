@@ -13,6 +13,7 @@
 }
 
 .nav-logo {
+	@include transition(color);
 	color: #FFF;
 	font-weight: 500;
 	position: absolute;
@@ -20,14 +21,15 @@
     display: block;
     height: 44px;
     padding-left: 20px;
-    top: 3px;
+    top: 2px;
     left: 0;
     font-size: 1.85em;
     font-family: 'Pacifico', 'Raleway', 'Helvetica', 'Helvetica Neue', 'Arial', sans-serif;;
-    line-height: 43px;
+    line-height: 1.5;
 
     &:hover {
     	text-decoration: none;
+    	color: lighten($color-green, 30%);
     }
 }
 

@@ -1,7 +1,7 @@
-$media-sm: "(max-width: 500px)";
-$media-med: "(min-width: 501px) and (max-width: 799px)";
-$media-lg: "(min-width: 800px)";
-
+$media-sm: "(max-width: 544px)";
+$media-med: "(min-width: 545px) and (max-width: 799px)";
+$media-lg: "(min-width: 800px) and (max-width: 1299px)";
+$media-xl: "(min-width: 1300px)";
 
 /* debug breakpoints */
 // @media #{$media-sm} {
@@ -19,5 +19,11 @@ $media-lg: "(min-width: 800px)";
 // @media #{$media-lg} {
 //     body {
 //         background: red !important;
+//     }
+// }
+
+// @media #{$media-xl} {
+//     body {
+//         background: purple !important;
 //     }
 // }

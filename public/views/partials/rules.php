@@ -20,4 +20,5 @@
 		<li>In the event of a tie, player 2 wins. So don't tie, player 1.</li>
 		<li>If the game ends with points on the line, those points are discarded.</li>
 	</ul>
+	<p>It's also worth mentioning that there's a cheat mode. If you can <a href="https://github.com/tublitzed/hi-lo">find it</a>, you can use it. It'll allow you to draw more cards at a time.</p>
 </section>

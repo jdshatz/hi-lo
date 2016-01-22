@@ -13,6 +13,7 @@ class Deck {
 	 */
 	constructor(opts) {
 		this.vent = opts.vent;
+		this.$el = $('.deck');
 		if (!opts.deck) {
 			this.create();
 		} else {
@@ -30,8 +31,9 @@ class Deck {
 					this.update(data);
 					//save deck_id if we've just created a new deck.
 					this.vent.pub('save');
+					this.vent.pub('appReady');
 				} else {
-					//TODO
+					this.vent.pub('error');
 				}
 			});
 	}
@@ -65,7 +67,6 @@ class Deck {
 	draw() {
 		$.when($.ajax(this.getDrawUrl(this.id)))
 			.then((data, textStatus, jqXHR) => {
-				console.log(data);
 				if (data.success) {
 					this.update(data);
 					this.vent.pub('drawCard');
@@ -76,12 +77,79 @@ class Deck {
 	}
 
 	/**
+	 * How many cards to draw at a time. With the right flags enabled, you
+	 * might just be able to speed up the game. A lot.
+	 * 
+	 * @return {number}
+	 */
+	getDrawCount() {
+		if (window.location.href.indexOf('debug') === -1 || window.location.href.indexOf('drawCount') === -1) {
+			return 1;
+		}
+
+		let count = window.location.search.split('drawCount=');
+		count = count[1] || 1;
+		if (this.remaining < count || isNaN(count)) {
+			return 1;
+		}
+		return count;
+	}
+
+	/**
 	 * Draw a card
 	 * @param  {string} id
 	 * @return {string}
 	 */
 	getDrawUrl(id) {
-		return API_URL + 'api/deck/' + id + '/draw/?count=1';
+		return API_URL + 'api/deck/' + id + '/draw/?count=' + this.getDrawCount();
+	}
+
+	/**
+	 * Render out the deck based on contents.
+	 * The deck area includes draw pile, discard pile, and points on the line.
+	 *
+	 * @param {number} pointsOnTheLine
+	 */
+	render(pointsOnTheLine) {
+		this.renderPointsOtl(pointsOnTheLine);
+		this.renderCardsLeft();
+		this.renderDiscardPile();
+	}
+
+	/**
+	 * Render details about points on the line.
+	 *
+	 * @param {number} pointsOnTheLine
+	 */
+	renderPointsOtl(pointsOnTheLine) {
+		var $pointsOnTheLineWrapper = this.$el.find('.points-otl');
+		$pointsOnTheLineWrapper.find('.points-otl__point-value').html(pointsOnTheLine);
+		$pointsOnTheLineWrapper.find('.points-otl__text').text(pointsOnTheLine === 1 ? 'point' : 'points');
+	}
+
+	/**
+	 * Render the number of cards left.
+	 */
+	renderCardsLeft() {
+		let html = this.remaining;
+		html += (this.remaining === 1) ? ' card left' : ' cards left';
+		$('.cards-left').html(html);
+	}
+
+	/**
+	 * Render out the active card if one is set, or clear discard pile.
+	 */
+	renderDiscardPile() {
+		//this won't always be set if nothing in discard pile.
+		var $pile = $('.deck__card--discard-pile');
+		if (this.activeCard) {
+			let card = this.activeCard;
+			let $cardImg = $('<img>').prop('src', card.images.png).prop('alt', card.value + ' ' + card.suit.toLowerCase());
+			$cardImg.addClass('deck__card-img')
+			$pile.addClass('deck__card--discard-pile--has-card').find('.card').html($cardImg);
+		} else {
+			$pile.removeClass('deck__card--discard-pile--has-card').find('.card').html('');
+		}
 	}
 
 	/**
@@ -134,7 +202,7 @@ class Deck {
 		} else if (suit === 'hearts') {
 			return 2;
 		}
-		return 3;
+		return 3; //spades
 	}
 
 	/**

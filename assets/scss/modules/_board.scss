@@ -11,23 +11,45 @@
     margin: 1em 0 0.5em;
 }
 
+.body--game-over {
+    .guess__info--guesser,
+    .active-player-indicator,
+    .points-otl {
+        display: none;
+    }
+
+    .player__role {
+        opacity: 0;
+    }
+
+    .player__name {
+    	margin: 1em 0 0 0;
+    }
+
+    .deck {
+        opacity: 0;
+        height: 0;
+        margin: 0;
+    }
+}
+
 @media #{$media-sm}, #{$media-med} {
-	body {
-		font-size: 14px;
-	}
+    body {
+        font-size: 14px;
+    }
 
-	.headline {
-		text-align: left;
+    .headline {
+        text-align: left;
 
-		span {
-			display: block;
-		}
-	}
+        span {
+            display: block;
+        }
+    }
 
-	.board {
-		width: calc(100% - 2em);
-		min-height: auto;
-		padding: 0 1em 3em;
-		border-bottom: 3px solid $color-green;
-	}
+    .board {
+        width: calc(100% - 2em);
+        min-height: auto;
+        padding: 0 1em 3em;
+        border-bottom: 3px solid $color-green;
+    }
 }
