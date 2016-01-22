@@ -36,14 +36,14 @@
     margin: 1em;
     padding: 1em;
     border: 5px solid rgba(255, 255, 255, 0.34);
-    color: #CCC;
+    color: $color-light-grey;
     a {
-        color: #CCC;
+        color: $color-light-grey;
     }
     @include transition;
 
     .player--active & {
-        background: #3288e6;
+        background: $color-light-blue;
         color: #FFF;
 
         a {
@@ -53,7 +53,7 @@
 }
 
 .player__points {
-    border-right: 1px solid #CCC;
+    border-right: 1px solid $color-light-grey;
     padding-right: 1em;
     position: absolute;
     float: left;
@@ -85,7 +85,7 @@
 
     50% {
         padding-top: 6px;
-        color: $color-wrong;
+        color: $color-red;
         transform: rotateZ(50deg);
         font-weight: 700;
     }

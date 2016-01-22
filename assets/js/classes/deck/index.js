@@ -161,6 +161,9 @@ class Deck {
 		return currVal > prevVal;
 	}
 
+	/**
+	 * When the discard pile is discarded.
+	 */
 	clearActiveCard() {
 		this.activeCard = null;
 	}

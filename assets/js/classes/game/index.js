@@ -40,7 +40,7 @@ class Game {
 		this.vent.sub('error', (error) => this.error(error));
 
 		var self = this;
-		$('.deck__card--draw-pile').on('click', function(event){
+		$('.deck__card--draw-pile').on('click', function(event) {
 			event.preventDefault();
 			var $this = $(this);
 			//prevent rapid fire clicks from triggering multiple draws.
@@ -63,7 +63,7 @@ class Game {
 			}
 		});
 
-		$('.alert-link').on('click', function(event){
+		$('.alert-link').on('click', function(event) {
 			event.preventDefault();
 			vex.dialog.alert($(this).attr('data-alert-content'));
 		});
@@ -82,8 +82,10 @@ class Game {
 		this.switchPlayers();
 	}
 
+	/**
+	 * When the currently active player chooses to pass.
+	 */
 	pass() {
-		console.log('pass!');
 		this.getActivePlayer().clearGuess();
 		this.switchRoles();
 		this.switchPlayers();
@@ -126,6 +128,10 @@ class Game {
 		console.log(this);
 	}
 
+	/**
+	 * Check a guess to see if it's right or wrong and then handle results.
+	 * @param  {Player} inactivePlayer
+	 */
 	checkGuess(inactivePlayer) {
 		let isHigher = this.deck.isActiveCardHigherThanPrev();
 		let isCorrect = isHigher ? inactivePlayer.guess === GUESS_HI : inactivePlayer.guess === GUESS_LO;
@@ -136,6 +142,9 @@ class Game {
 		}
 	}
 
+	/**
+	 * Handle a correct guess.
+	 */
 	onCorrectGuess() {
 		this.renderDeck();
 		this.showGuessResult(true);
@@ -146,6 +155,13 @@ class Game {
 		}, flash.DISPLAY_DURATION + 100);
 	}
 
+	/**
+	 * Handle an incorrect guess.
+	 * Update the inactivePlayer(the Guesser) score, show the results of the guess 
+	 * onscreen for a moment, and then clear results and move forward.
+	 * 
+	 * @param  {Player} inactivePlayer
+	 */
 	onIncorrectGuess(inactivePlayer) {
 		this.render();
 		this.showGuessResult(false);
@@ -153,17 +169,25 @@ class Game {
 			.incrementScore(this.pointsOnTheLine)
 			.clearGuess()
 			.render();
-		this.clearDiscardPile();
-	}
 
-	clearDiscardPile() {
 		setTimeout(() => {
-			this.pointsOnTheLine = 0;
-			this.deck.clearActiveCard();
-			this.render();
+			this.clearDiscardPile();
 		}, flash.DISPLAY_DURATION);
 	}
 
+	/**
+	 * When a guess is incorrect, we clear the pile.
+	 */
+	clearDiscardPile() {
+		this.pointsOnTheLine = 0;
+		this.deck.clearActiveCard();
+		this.render();
+	}
+
+	/**
+	 * Flash a quick message on screen to show guess result.
+	 * @param  {Boolean} isCorrect
+	 */
 	showGuessResult(isCorrect) {
 		let message = isCorrect ? 'Correct!' : 'Wrong!';
 		let type = isCorrect ? flash.TYPE_SUCCESS : flash.TYPE_ERROR;
@@ -288,7 +312,6 @@ class Game {
 	 * Fills in UI based on state of the game.
 	 */
 	render() {
-		$('.odometer').html(Math.floor(Math.random() * 100));
 		var activePlayer = this.getActivePlayer();
 		this.renderHeadline(activePlayer);
 		this.renderGuess(activePlayer);
@@ -334,20 +357,25 @@ class Game {
 	}
 
 	/**
-	 * Updates deck area of the UI:
-	 * -cards left
-	 * -renders new card
-	 * -points on the line
+	 * Updates deck area of the UI.
 	 */
 	renderDeck() {
 		this.renderPointsOtl();
+		this.renderCardsLeft();
+		this.renderDiscardPile();
+	}
+
+	/**
+	 * Render the number of cards left.
+	 */
+	renderCardsLeft() {
 		let cardsLeft = this.deck.remaining || 52; //we don't always have a deck here...(so really, shoud move this.)
 		cardsLeft += (cardsLeft === 1) ? ' card left' : ' cards left';
 		$('.cards-left').html(cardsLeft);
+	}
 
+	renderDiscardPile() {
 		//this won't always be set if nothing in discard pile.
-		//
-		//TODO refactor
 		if (this.deck.activeCard) {
 			let card = this.deck.activeCard;
 			let $cardImg = $('<img>').prop('src', card.images.png).prop('alt', card.value + ' ' + card.suit.toLowerCase());

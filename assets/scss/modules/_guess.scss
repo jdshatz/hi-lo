@@ -4,7 +4,6 @@
 
 .guess__info {
     display: none;
-
     .body--has-flash & {
         visibility: hidden;
     }
@@ -20,17 +19,14 @@
 
 .guess__buttons {
     margin-top: 2em;
-
     label {
         margin: 0 0.5em;
         text-transform: uppercase;
         font-size: 0.9em;
     }
-
     .button {
         position: relative;
         top: 3px;
-
         &:active {
             top: 4px;
         }
@@ -41,7 +37,6 @@
     .guess {
         text-align: left;
     }
-
     .guess__buttons {
         label {
             display: none;

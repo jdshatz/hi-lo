@@ -1,6 +1,8 @@
 <div class="deck">
 	<div class="deck__item">
 		<a href="#" class="deck__card deck__card--draw-pile" title="Draw a card">
+			<div class="deck-card-back">
+			</div>
 		</a>
 		<label><span class="cards-left">52 cards left</span></label>
 	</div>

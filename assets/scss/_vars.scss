@@ -2,23 +2,20 @@ $image-dir: '/public/img/';
 $fa-font-path: '/public/fonts/font-awesome';
 $font-family: 'Raleway', 'Helvetica', 'Helvetica Neue', 'Arial', sans-serif;
 
-$color-1: #666;
-$color-2: #333;
-$color-3: #555;
-$color-4: #CCC;
-
+$color-light-grey: #CCC;
+$color-grey: #858484;
 $color-near-white: #F8F8F8;
 $color-near-black: #161515;
 
-$text-color: $color-2;
+$color-light-blue: #3288e6; //default to match vex plugin skin for now.
+$color-dark-blue: #20245E;
+$color-green: #245A27;
+$color-red: #A02323;
 
-$color-link: $color-3;
-$color-hover-link: lighten($color-3, 20%);
+$color-link: $color-light-blue;
+$color-hover-link: lighten($color-light-blue, 20%);
 
-
-
-$color-wrong: #A02323;
-$color-right: #247517;
+$text-color: $color-dark-blue;
 
 $base-font-size: 16px;
 
