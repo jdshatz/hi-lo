@@ -19,7 +19,7 @@ var buildGameOptions = () => {
 	return Object.assign(store.loadGame(), {
 		vent
 	});
-}
+};
 
 /**
  * Setup the game
@@ -39,6 +39,6 @@ var initGame = () => {
 	if (window.location.href.indexOf('debug') !== -1) {
 		window.DEBUG_HILO = game;
 	}
-}
+};
 
 initGame();

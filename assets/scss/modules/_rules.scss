@@ -8,6 +8,7 @@
     bottom: 0;
     top: 0;
     position: fixed;
+    overflow-y: scroll;
     .rules--active & {
         display: block;
     }
@@ -42,4 +43,10 @@
 	.rules {
 		width: 50%;
 	}
+}
+
+@media #{$media-xl} {
+    .rules {
+        width: 30%;
+    }
 }

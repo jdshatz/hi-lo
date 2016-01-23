@@ -145,7 +145,7 @@ class Deck {
 		if (this.activeCard) {
 			let card = this.activeCard;
 			let $cardImg = $('<img>').prop('src', card.images.png).prop('alt', card.value + ' ' + card.suit.toLowerCase());
-			$cardImg.addClass('deck__card-img')
+			$cardImg.addClass('deck__card-img');
 			$pile.addClass('deck__card--discard-pile--has-card').find('.card').html($cardImg);
 		} else {
 			$pile.removeClass('deck__card--discard-pile--has-card').find('.card').html('');

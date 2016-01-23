@@ -42,6 +42,12 @@ class Game {
 
 		var self = this;
 		var $body = $('body');
+
+		$body.on('keydown', (event) => {
+			this.processKeydownEvent(event);
+			return;
+		});
+
 		$('.deck__card--draw-pile').on('click', function(event) {
 			event.preventDefault();
 			var $this = $(this);
@@ -69,6 +75,35 @@ class Game {
 			event.preventDefault();
 			vex.dialog.alert($(this).attr('data-alert-content'));
 		});
+
+	}
+
+	/**
+	 * We get here on all keydown events, but
+	 * we only care about a few. Handle them here, ignore 
+	 * the rest. We'll bypass all this if we have a modal open, or if the game is over.
+	 * 
+	 * @param  {object} event jQuery bound keydown
+	 */
+	processKeydownEvent(event) {
+		let listenForKeycodes = [13, 38, 40, 39];
+		if (listenForKeycodes.indexOf(event.which) === -1 || $('.vex').is(':visible') || $('body').hasClass(GAME_OVER_CLASS)) {
+			return;
+		}
+
+
+		let activePlayer = this.getActivePlayer();
+		if (activePlayer.role === roles.ROLE_DEALER) {
+			if (event.which === 13) { //enter
+				this.deck.draw();
+			}
+		} else if (event.which === 38) { //up arrow
+			this.submitGuess(GUESS_HI);
+		} else if (event.which === 40) { //down arrow
+			this.submitGuess(GUESS_LO);
+		} else if (event.which === 39 && activePlayer.guessCount >= 3) { //right arrow
+			this.pass();
+		}
 	}
 
 	/**
@@ -227,6 +262,7 @@ class Game {
 	clearDiscardPile() {
 		this.pointsOnTheLine = 0;
 		this.deck.clearActiveCard();
+		this.save();
 		this.render();
 	}
 
@@ -242,6 +278,8 @@ class Game {
 
 	/**
 	 * Save current game state. Uses localStorage.
+	 * Currently just saves everything, DOM refs and all, which
+	 * could(should) at some point be removed.
 	 */
 	save() {
 		store.saveGame(JSON.stringify(this));

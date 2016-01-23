@@ -43,3 +43,11 @@ h2 {
         font-size: 14px;
     }
 }
+
+hr {
+    clear: both;
+    border: 0;
+    border-bottom: 3px solid rgba($color-light-blue, 0.5);
+    height: 0;
+    margin: 2em 0;
+}

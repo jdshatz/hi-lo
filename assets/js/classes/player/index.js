@@ -115,7 +115,7 @@ class Player {
 		this.$el.addClass(HIGHLIGHT_SCORE_CLASS);
 		setTimeout(() => {
 			this.$el.removeClass(HIGHLIGHT_SCORE_CLASS);
-		}, 1500)
+		}, 1500);
 	}
 
 	/**
@@ -134,7 +134,7 @@ class Player {
 		if (this.role === roles.ROLE_DEALER) {
 			return 'draw a card...';
 		} else if (this.guessCount === 3) {
-			return 'take a guess or pass...'
+			return 'take a guess or pass...';
 		}
 		return 'take a guess...';
 	}
