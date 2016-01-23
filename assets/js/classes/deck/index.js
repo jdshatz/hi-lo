@@ -1,4 +1,6 @@
 import $ from 'jquery';
+import exporter from '../../modules/exporter';
+
 const API_URL = 'http://deckofcardsapi.com/';
 const CREATE_URL = API_URL + 'api/deck/new/shuffle/?deck_count=1';
 
@@ -234,6 +236,14 @@ class Deck {
 	 */
 	clearActiveCard() {
 		this.activeCard = null;
+	}
+
+	/**
+	 * Export deck
+	 * @return {object}
+	 */
+	export() {
+		return exporter.exportObj(this, ['$el', 'vent']);
 	}
 };
 module.exports = Deck;

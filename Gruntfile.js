@@ -81,7 +81,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-eslint');
 
-    grunt.registerTask('default', ['sass', 'eslint', 'browserify']);
+    grunt.registerTask('default', ['sass', 'eslint', 'browserify', 'mocha:test']);
     grunt.registerTask('w', ['watch']);
     grunt.registerTask('test', ['browserify:test', 'mocha:test']);
+    grunt.registerTask('lint', ['eslint']);
 };

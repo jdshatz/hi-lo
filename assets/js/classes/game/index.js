@@ -5,11 +5,13 @@ import store from '../../modules/store';
 import vex from '../../plugins/vex';
 import roles from '../../modules/roles';
 import flash from '../../modules/flash';
+import exporter from '../../modules/exporter';
 
 const playerCount = 2;
 const GUESS_HI = 'hi';
 const GUESS_LO = 'lo';
 const GAME_OVER_CLASS = 'body--game-over';
+const DIALOG_CONFIRM_MESSAGE = 'Ok';
 
 
 /**
@@ -215,6 +217,26 @@ class Game {
 	}
 
 	/**
+	 * Show intro message when starting a new game.
+	 */
+	showIntro() {
+		let message = '<h2>Welcome to Hi-Lo!</h2><p>The goal of this two person game is to <b>end the game with as few points as possible.</b></p>';
+		message += '<ul>';
+		message += '<li>The first player starts as the Dealer, the second player is the Guesser.</li>';
+		message += '<li>An incorrect guess will cause all the points on the line to go to the Guesser.</li>';
+		message += '<li>After the Guesser gets three correct guesses in a row, they will be allowed to pass, and the roles reverse.</li>';
+		message += '</ul>';
+		vex.dialog.alert({
+			message: message,
+			buttons: [{
+				text: 'Start Game',
+				type: 'submit',
+				className: 'vex-dialog-button-primary'
+			}]
+		});
+	}
+
+	/**
 	 * @param  {Player} inactivePlayer
 	 * @return {Boolean}
 	 */
@@ -282,7 +304,33 @@ class Game {
 	 * could(should) at some point be removed.
 	 */
 	save() {
-		store.saveGame(JSON.stringify(this));
+		store.saveGame(JSON.stringify(this.export()));
+	}
+
+	/**
+	 * Remove the stuff we don't want to save
+	 * to local storage like DOM elements and vent object.
+	 * We'll save everything else.
+	 * 
+	 * @return {object} game
+	 */
+	export() {
+		let game = exporter.exportObj(this, ['deck', 'players', 'vent']);
+		game.deck = this.deck.export();
+		game.players = this.exportPlayers();
+		return game;
+	}
+
+	/**
+	 * Export players.
+	 * @return {array}
+	 */
+	exportPlayers() {
+		var players = [];
+		this.players.forEach((player) => {
+			players.push(player.export());
+		});
+		return players;
 	}
 
 	/**
@@ -421,12 +469,14 @@ class Game {
 
 	/**
 	 * Fills in UI based on state of the game.
+	 * @return {self}
 	 */
 	render() {
 		var activePlayer = this.getActivePlayer();
 		this.renderHeadline(activePlayer);
 		this.renderGuess(activePlayer);
 		this.deck.render(this.pointsOnTheLine);
+		return this;
 	}
 
 	/**

@@ -25,9 +25,9 @@ $ grunt w
 $ grunt test
 ```
 
-* Lint JS files via eslint:
+* Lint JS files:
 ```sh
-$ grunt eslint
+$ grunt lint
 ```
 
 ## The Rules

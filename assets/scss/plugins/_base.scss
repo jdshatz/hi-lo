@@ -2,3 +2,11 @@
 
 @import '../../../node_modules/vex-js/sass/vex.sass';
 @import '../../../node_modules/vex-js/sass/vex-theme-os.sass';
+
+.vex-dialog-message ul {
+	margin-left: 2em;
+}
+
+.vex.vex-theme-os .vex-content {
+	border-top-color: $color-green;
+}

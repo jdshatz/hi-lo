@@ -33,7 +33,7 @@ var initGame = () => {
 	if (opts.deck) {
 		game.render();
 	}
-	vent.sub('appReady', () => game.render());
+	vent.sub('appReady', () => game.render().showIntro());
 
 	//debug info:
 	if (window.location.href.indexOf('debug') !== -1) {

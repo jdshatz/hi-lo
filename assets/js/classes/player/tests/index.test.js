@@ -36,4 +36,42 @@ suite('Player', function() {
 			player.toggleActiveClasses.restore();
 		});
 	});
+
+	suite('switchRole', function() {
+		var initialRole;
+		suiteSetup(function() {
+			initialRole = player.role;
+			player.switchRole();
+		});
+
+		test('should change "role" value', function() {
+			assert.isTrue(player.role !== initialRole);
+		});
+
+		suiteTeardown(function() {
+			player.switchRole();
+		});
+	});
+
+	suite('export', function() {
+		var exported;
+		suiteSetup(function() {
+			exported = player.export();
+		});
+		test('should return an object without key for $el', function() {
+			assert.isUndefined(exported['$el']);
+		});
+		test('should return an object without key for vent', function() {
+			assert.isUndefined(exported['vent']);
+		});
+		test('should return an object', function() {
+			assert.isObject(exported);
+		});
+		test('should return a score of 0', function() {
+			assert.equal(exported.score, 0);
+		});
+		test('should return a guessCount of 0', function() {
+			assert.equal(exported.guessCount, 0);
+		});
+	});
 });

@@ -42,6 +42,7 @@ var nav = {
 		});
 
 		$doc.on('click', '.rules--active .page-mask, .close-rules', (event) => {
+			event.preventDefault();
 			this.toggleRules(false);
 		});
 

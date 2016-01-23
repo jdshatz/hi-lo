@@ -53,6 +53,11 @@
         a {
             color: $color-dark-blue;
             border-color: lighten($color-light-blue, 20%);
+
+            &:hover {
+                color: lighten($color-light-blue, 20%);
+                border-color: $color-light-grey;
+            }
         }
     }
 }

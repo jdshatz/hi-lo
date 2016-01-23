@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import roles from '../../modules/roles';
+import exporter from '../../modules/exporter';
 
 const ACTIVE_CLASS = 'player--active';
 const SECOND_PLAYER_ACTIVE = 'body--player2-active';
@@ -174,6 +175,14 @@ class Player {
 		let alert = "When you have three correct guesses in a row, you will be allowed to pass.";
 		alert += " It is to your advantage to pass, so you can avoid gaining points.";
 		return "<a href='#' class='alert-link' data-alert-content='" + alert + "'>" + linkText + "</a>";
+	}
+
+	/**
+	 * Export deck
+	 * @return {object}
+	 */
+	export() {
+		return exporter.exportObj(this, ['$el', 'vent']);
 	}
 };
 module.exports = Player;
