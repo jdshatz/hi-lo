@@ -1,5 +1,14 @@
+//dev
 $image-dir: '/public/img/';
 $fa-font-path: '/public/fonts/font-awesome';
+
+// prod
+// $image-dir: '/img/apps/hi-lo/';
+// // ie, https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/fonts/fontawesome-webfont.eot
+// // get around CORS issues in prod for now w/CDN. Deck of cards API won't serve over https, 
+// // so need to serve app over HTTP.
+// $fa-font-path: 'https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/fonts';
+
 $font-family: 'Raleway', 'Helvetica', 'Helvetica Neue', 'Arial', sans-serif;
 
 $color-light-grey: #CCC;
@@ -16,9 +25,6 @@ $color-link: $color-light-blue;
 $color-hover-link: lighten($color-light-blue, 20%);
 
 $text-color: $color-dark-blue;
-
 $base-font-size: 16px;
-
 $content-width: 650px;
-
 $animation-speed: 200ms;

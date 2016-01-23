@@ -9,6 +9,7 @@
     top: 0;
     position: fixed;
     overflow-y: scroll;
+    z-index: 2;
     .rules--active & {
         display: block;
     }
