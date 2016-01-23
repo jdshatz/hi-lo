@@ -38,6 +38,10 @@ class Game {
 	 */
 	bindEventHandlers() {
 		this.vent.sub('save', () => this.save());
+		this.vent.sub('player:nameChanged', () => {
+			this.render();
+			this.save();
+		});
 		this.vent.sub('render', () => this.render());
 		this.vent.sub('drawCard', () => this.onDrawCard());
 		this.vent.sub('error', (error) => this.error(error));
@@ -73,11 +77,10 @@ class Game {
 			}
 		});
 
-		$(document).on('click', '.alert-link', function(event) {
+		$(document).on('click', '.modal-link--alert', function(event) {
 			event.preventDefault();
 			vex.dialog.alert($(this).attr('data-alert-content'));
 		});
-
 	}
 
 	/**

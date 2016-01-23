@@ -1,11 +1,12 @@
 import $ from 'jquery';
 import roles from '../../modules/roles';
 import exporter from '../../modules/exporter';
+import vex from '../../plugins/vex';
 
 const ACTIVE_CLASS = 'player--active';
 const SECOND_PLAYER_ACTIVE = 'body--player2-active';
 const HIGHLIGHT_SCORE_CLASS = 'player--highlight-score';
-
+const MAX_LENGTH_NAME = 16;
 /**
  * Each game has players.
  */
@@ -24,6 +25,37 @@ class Player {
 		this.guessCount = opts.guessCount || 0;
 		this.guess = opts.guess || null;
 		this.$el = $('#' + this.id);
+		this.bindEventHandlers();
+	}
+
+	/**
+	 * Bind event handlers for this player.
+	 */
+	bindEventHandlers() {
+		this.$el.on('click', '.player__name', (event) => {
+			event.preventDefault();
+			this.showChangeNamePrompt();
+		});
+	}
+
+	/**
+	 * Show modal to change name
+	 */
+	showChangeNamePrompt() {
+		let input = "<input name='vex' type='text' class='vex-dialog-prompt-input' placeholder='Enter new name' maxlength='" + MAX_LENGTH_NAME +"' />"
+		vex.dialog.prompt({
+			message: 'Change your name, ' + this.name + ':',
+			input: input,
+			callback: (value) => {
+				//escape html entities with use of .text()
+				value = $('<div>').html($.trim(value)).text();
+				//false is returned on hitting esc and it's tranformed to a string above.
+				//this has caveat of preventing user from setting their username to 'false' but...oh well. improve if ever needed.
+				if (value && value !== 'false') {
+					this.setName(value);
+				}
+			}
+		});
 	}
 
 	/**
@@ -70,7 +102,7 @@ class Player {
 		$points.find('em').html(this.score === 1 ? 'point' : 'points');
 
 		this.$el.find('.player__role').html(this.getRoleHtml());
-		this.$el.find('.player__name').html(this.name);
+		this.$el.find('.player__name a').html(this.name);
 		return this;
 	}
 
@@ -89,6 +121,20 @@ class Player {
 	 */
 	setGuess(guess) {
 		this.guess = guess;
+		return this;
+	}
+
+	/**
+	 * Set name
+	 * @param {string}
+	 */
+	setName(name) {
+		if (name.length > MAX_LENGTH_NAME) {
+			name = name.substr(0, MAX_LENGTH_NAME);
+		}
+		this.name = name;
+		this.render();
+		this.vent.pub('player:nameChanged');
 		return this;
 	}
 
@@ -174,14 +220,14 @@ class Player {
 	buildAlertHintLink(linkText) {
 		let alert = "When you have three correct guesses in a row, you will be allowed to pass.";
 		alert += " It is to your advantage to pass, so you can avoid gaining points.";
-		return "<a href='#' class='alert-link' data-alert-content='" + alert + "'>" + linkText + "</a>";
+		return "<a href='#' class='modal-link modal-link--alert' data-alert-content='" + alert + "'>" + linkText + "</a>";
 	}
 
 	/**
 	 * Export deck
 	 * @return {object}
 	 */
-	export() {
+	export () {
 		return exporter.exportObj(this, ['$el', 'vent']);
 	}
 };

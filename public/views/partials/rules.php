@@ -23,12 +23,13 @@
 	</ul>
 	<hr />
 	<h2>Protips:</h2>
-	<p>You can also use your keyboard to make moves when it's your turn:</p>
+	<p>Use your keyboard to make moves when it's your turn:</p>
 	<ul>
 		<li><b>Enter: </b> Draw a card.</li>
 		<li><b>Up arrow: </b> Guess high.</li>
 		<li><b>Down arrow: </b> Guess low.</li>
 		<li><b>Right arrow: </b> Pass.</li>
 	</ul>
+	<p>Click your name to change it anytime during the game.</p>
 	<p>It's also worth mentioning that there's a cheat mode. If you can <a href="https://github.com/tublitzed/hi-lo">find it</a>, you can use it. It'll allow you to draw more cards at a time.</p>
 </section>

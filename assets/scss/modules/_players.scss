@@ -18,6 +18,25 @@
     font-size: 1.3em;
     margin: 0.5em 0;
     padding: 0;
+
+    //TODO: fix the jumpiness.
+    a {
+        &:hover {
+            &:after {
+                display: inline-block;
+            }
+        }
+
+        &:after {
+            display: none;
+            position: relative;
+            top: -5px;
+            left: 7px;
+            content: '\f040'; //edit icon. fa-pencil.
+            font: normal normal normal 14px/1 FontAwesome;
+            
+        }
+    }
 }
 
 .player__role {

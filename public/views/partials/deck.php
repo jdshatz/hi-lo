@@ -13,13 +13,13 @@
 		</div>
 		<label class="points-otl show-media-non-lg-only">
 			<span class="points-otl__point-value">0</span> 
-			<span class="points-otl__text">points</span> <a href="#" class="alert-link" data-alert-content="The points on the line will increase until the Guesser gets a wrong answer. Then, all points on the line go to the Guesser. Remember: the goal is to end the game with as few points as possible.">on the line</a>
+			<span class="points-otl__text">points</span> <a href="#" class="modal-link modal-link--alert" data-alert-content="The points on the line will increase until the Guesser gets a wrong answer. Then, all points on the line go to the Guesser. Remember: the goal is to end the game with as few points as possible.">on the line</a>
 		</label>
 	</div>
 	<div class="deck__item">
 		<div class="points-otl points-otl--lg show-media-lg-only">
 			<span class="points-otl__point-value">0</span> 
-			<span class="points-otl__text">points</span> <a href="#" class="alert-link" data-alert-content="The points on the line will increase until the Guesser gets a wrong answer. Then, all points on the line go to the Guesser. Remember: the goal is to end the game with as few points as possible.">on the line</a>
+			<span class="points-otl__text">points</span> <a href="#" class="modal-link modal-link--alert" data-alert-content="The points on the line will increase until the Guesser gets a wrong answer. Then, all points on the line go to the Guesser. Remember: the goal is to end the game with as few points as possible.">on the line</a>
 		</div>
 	</div>
 </div>
