@@ -17,15 +17,15 @@
 	color: #FFF;
 	font-weight: 500;
 	position: absolute;
-	background: url("#{$image-dir}cards-logo.png") no-repeat 0 0;
+	background: url("#{$image-dir}cards-logo.png") no-repeat 0 -3px;
     display: block;
     height: 44px;
     padding-left: 20px;
-    top: 2px;
+    top: 0;
     left: 0;
     font-size: 1.85em;
     font-family: 'Pacifico', 'Raleway', 'Helvetica', 'Helvetica Neue', 'Arial', sans-serif;;
-    line-height: 1.5;
+    line-height: 1.7;
 
     &:hover {
     	text-decoration: none;
@@ -52,5 +52,11 @@
 		content: '|';
 		margin: 0 0.5em;
 		color: lighten($color-green, 50%);
+	}
+}
+
+@media #{$media-sm}, #{$media-med} {
+	.nav-logo {
+		background-position: 0 -7px;
 	}
 }

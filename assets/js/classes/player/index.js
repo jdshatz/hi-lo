@@ -25,6 +25,9 @@ class Player {
 		this.guessCount = opts.guessCount || 0;
 		this.guess = opts.guess || null;
 		this.$el = $('#' + this.id);
+		this.$body = $('body');
+		//TODO: gameOverClass should probably live elsewhere, in shared meta, not on player
+		this.gameOverClass = opts.gameOverClass;
 		this.bindEventHandlers();
 	}
 
@@ -34,7 +37,9 @@ class Player {
 	bindEventHandlers() {
 		this.$el.on('click', '.player__name', (event) => {
 			event.preventDefault();
-			this.showChangeNamePrompt();
+			if (!this.$body.hasClass(this.gameOverClass)) {
+				this.showChangeNamePrompt();
+			}
 		});
 	}
 
@@ -198,7 +203,7 @@ class Player {
 			return 'Dealer';
 		}
 
-		if (this.guessCount === 3) {
+		if (this.guessCount >= 3) {
 			return 'Guesser';
 		}
 
@@ -224,11 +229,11 @@ class Player {
 	}
 
 	/**
-	 * Export deck
+	 * Export player
 	 * @return {object}
 	 */
 	export () {
-		return exporter.exportObj(this, ['$el', 'vent']);
+		return exporter.exportObj(this, ['$el', 'vent', '$body']);
 	}
 };
 module.exports = Player;
