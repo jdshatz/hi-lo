@@ -300,7 +300,7 @@ class Game {
 	onCorrectGuess(inactivePlayer) {
 		this.deck.render(this.pointsOnTheLine);
 		this.showGuessResult(true);
-		inactivePlayer.setGuessCount(inactivePlayer.guessCount > 2 ? 0 : inactivePlayer.guessCount + 1);
+		inactivePlayer.setGuessCount(inactivePlayer.guessCount + 1);
 	}
 
 	/**
@@ -415,7 +415,8 @@ class Game {
 		if (existingPlayers) {
 			existingPlayers.forEach((playerData) => {
 				Object.assign(playerData, {
-					vent: this.vent
+					vent: this.vent,
+					gameOverClass: GAME_OVER_CLASS
 				});
 				players.push(this.createPlayer(playerData));
 			});
@@ -427,7 +428,8 @@ class Game {
 					id: 'player' + i,
 					name: 'Player ' + i,
 					role: i === 1 ? roles.ROLE_DEALER : roles.ROLE_GUESSER,
-					active: i === 1
+					active: i === 1,
+					gameOverClass: GAME_OVER_CLASS
 				}));
 			}
 		}
