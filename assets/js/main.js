@@ -34,11 +34,6 @@ var initGame = () => {
 		game.render();
 	}
 	vent.sub('appReady', () => game.render().showIntro());
-
-	//debug info:
-	if (window.location.href.indexOf('debug') !== -1) {
-		window.DEBUG_HILO = game;
-	}
 };
 
 initGame();

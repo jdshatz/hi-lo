@@ -42,7 +42,7 @@ class Player {
 	 * Show modal to change name
 	 */
 	showChangeNamePrompt() {
-		let input = "<input name='vex' type='text' class='vex-dialog-prompt-input' placeholder='Enter new name' maxlength='" + MAX_LENGTH_NAME +"' />"
+		let input = "<input name='vex' type='text' class='vex-dialog-prompt-input' placeholder='Enter new name' maxlength='" + MAX_LENGTH_NAME +"' />";
 		vex.dialog.prompt({
 			message: 'Change your name, ' + this.name + ':',
 			input: input,

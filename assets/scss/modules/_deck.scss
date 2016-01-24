@@ -10,7 +10,7 @@
 }
 
 .deck__card {
-    background: #F3F3F3;
+    background: $color-grey-0;
     display: block;
     width: 200px;
     height: 278px;
@@ -26,7 +26,7 @@
     label {
         display: block;
         font-size: 0.9em;
-        color: $color-grey;
+        color: $color-grey-6;
         margin-top: 124px;
         text-shadow: 1px 1px 1px #FFF;
     }
@@ -48,6 +48,7 @@
     width: 200px;
     max-width: 100%;
     height: auto;
+    line-height: 5;
 }
 
 .deck__card--draw-pile {
@@ -79,11 +80,16 @@
 }
 
 .points-otl--lg {
-    color: $color-green;
-    border-radius: 2px;
-    margin: 30% auto;
-    border: 1px solid $color-light-grey;
-    padding: 2em 1em 3em;
+    color: $color-grey-6;
+    margin: 50px 0 0 0;
+    background: $color-grey-0;
+    border: 2px solid #FFF;
+    outline: 1px solid $color-grey-2;
+    //absolutely position to stop jumping around when values change.
+    position: absolute;
+    height: 130px;
+    width: 185px;
+    padding-top: 2em;
 
     span, a {
         text-transform: uppercase;
@@ -91,7 +97,7 @@
     }
 
     a {
-        color: $color-green;
+        color: $color-grey-6;
 
         &:hover {
             color: $color-light-blue;
@@ -99,7 +105,8 @@
     }
 
     .points-otl__point-value {
-        color: $color-green;
+        font-weight: 500;
+        color: $color-light-blue;
         display: block;
         font-size: 2.5em;
         padding-bottom: 0.25em;

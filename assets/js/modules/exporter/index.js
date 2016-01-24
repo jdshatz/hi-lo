@@ -3,8 +3,9 @@
  */
 var exporter = {
 	/**
-	 * Shallow copy a class object and ignore keys. Used
-	 * for exporting objects without specific keys.
+	 * Shallow copy an object and ignore keys. Used
+	 * for exporting objects without specific keys, such as
+	 * cached DOM references, etc.
 	 *
 	 * @param {object} sourceObj
 	 * @param  {array=} ignoreKeys

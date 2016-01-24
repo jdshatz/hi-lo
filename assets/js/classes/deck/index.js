@@ -71,7 +71,7 @@ class Deck {
 			.then((data, textStatus, jqXHR) => {
 				if (data.success) {
 					this.update(data);
-					this.vent.pub('drawCard');
+					this.vent.pub('drawCardComplete');
 				} else {
 					this.vent.pub('error', 'Unable to draw a new card.');
 				}
@@ -113,7 +113,7 @@ class Deck {
 	 * @param {number} pointsOnTheLine
 	 */
 	render(pointsOnTheLine) {
-		this.renderPointsOtl(pointsOnTheLine);
+		this.renderPointsOnTheLine(pointsOnTheLine);
 		this.renderCardsLeft();
 		this.renderDiscardPile();
 	}
@@ -123,7 +123,7 @@ class Deck {
 	 *
 	 * @param {number} pointsOnTheLine
 	 */
-	renderPointsOtl(pointsOnTheLine) {
+	renderPointsOnTheLine(pointsOnTheLine) {
 		var $pointsOnTheLineWrapper = this.$el.find('.points-otl');
 		$pointsOnTheLineWrapper.find('.points-otl__point-value').html(pointsOnTheLine);
 		$pointsOnTheLineWrapper.find('.points-otl__text').text(pointsOnTheLine === 1 ? 'point' : 'points');
@@ -146,7 +146,8 @@ class Deck {
 		var $pile = $('.deck__card--discard-pile');
 		if (this.activeCard) {
 			let card = this.activeCard;
-			let $cardImg = $('<img>').prop('src', card.images.png).prop('alt', card.value + ' ' + card.suit.toLowerCase());
+			let altText = card.value.toLowerCase() + ' of ' + card.suit.toLowerCase();
+			let $cardImg = $('<img>').prop('src', card.images.png).prop('alt', altText);
 			$cardImg.addClass('deck__card-img');
 			$pile.addClass('deck__card--discard-pile--has-card').find('.card').html($cardImg);
 		} else {

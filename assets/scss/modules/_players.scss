@@ -55,11 +55,11 @@
     margin: 1em;
     padding: 1em;
     border: 5px solid rgba(255, 255, 255, 0.34);
-    color: $color-light-grey;
+    color: $color-grey-2;
     @include transition();
 
     a {
-        color: $color-light-grey;
+        color: $color-grey-2;
             &:hover {
                 color: lighten($color-light-blue, 20%);
             }
@@ -75,14 +75,14 @@
 
             &:hover {
                 color: lighten($color-light-blue, 20%);
-                border-color: $color-light-grey;
+                border-color: $color-grey-2;
             }
         }
     }
 }
 
 .player__points {
-    border-right: 1px solid $color-grey;
+    border-right: 1px solid $color-grey-6;
     padding-right: 1em;
     position: absolute;
     float: left;

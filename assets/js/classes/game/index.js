@@ -11,6 +11,7 @@ const playerCount = 2;
 const GUESS_HI = 'hi';
 const GUESS_LO = 'lo';
 const GAME_OVER_CLASS = 'body--game-over';
+const TURN_IN_PROGRESS_CLASS = 'body--turn-in-progress';
 const DIALOG_CONFIRM_MESSAGE = 'Ok';
 
 
@@ -27,6 +28,7 @@ class Game {
 		this.pointsOnTheLine = opts.pointsOnTheLine || 0;
 		this.deck = this.initDeck(opts.deck);
 		this.players = this.initPlayers(opts.players);
+		this.$body = $('body');
 		this.bindEventHandlers();
 	}
 
@@ -43,13 +45,14 @@ class Game {
 			this.save();
 		});
 		this.vent.sub('render', () => this.render());
-		this.vent.sub('drawCard', () => this.onDrawCard());
+		this.vent.sub('drawCardComplete', () => this.onDrawCardComplete());
 		this.vent.sub('error', (error) => this.error(error));
 
-		var self = this;
-		var $body = $('body');
+		this.vent.sub('startTurn', () => this.startTurn());
+		this.vent.sub('endTurn', () => this.endTurn());
 
-		$body.on('keydown', (event) => {
+		var self = this;
+		this.$body.on('keydown', (event) => {
 			this.processKeydownEvent(event);
 			return;
 		});
@@ -57,8 +60,8 @@ class Game {
 		$('.deck__card--draw-pile').on('click', function(event) {
 			event.preventDefault();
 			var $this = $(this);
-			//prevent rapid fire clicks from triggering multiple draws, and ignore if game is over.
-			if (!$this.hasClass('clicked') && !$body.hasClass(GAME_OVER_CLASS)) {
+			//prevent rapid fire clicks from triggering multiple draws, and ignore if game is over or turn in progress.
+			if (!$this.hasClass('clicked') && !self.$body.hasClass(GAME_OVER_CLASS) && !self.$body.hasClass(TURN_IN_PROGRESS_CLASS)) {
 				self.onDrawPileClick();
 			}
 			$this.addClass('clicked');
@@ -92,15 +95,20 @@ class Game {
 	 */
 	processKeydownEvent(event) {
 		let listenForKeycodes = [13, 38, 40, 39];
-		if (listenForKeycodes.indexOf(event.which) === -1 || $('.vex').is(':visible') || $('body').hasClass(GAME_OVER_CLASS)) {
+		if (listenForKeycodes.indexOf(event.which) === -1 || $('.vex').is(':visible') || this.$body.hasClass(GAME_OVER_CLASS)) {
 			return;
+		}
+
+		//prevent rapid clicks from triggering multiple turns.
+		if (this.turnInProgress()) {
+			return false;
 		}
 
 
 		let activePlayer = this.getActivePlayer();
 		if (activePlayer.role === roles.ROLE_DEALER) {
 			if (event.which === 13) { //enter
-				this.deck.draw();
+				this.drawCard();
 			}
 		} else if (event.which === 38) { //up arrow
 			this.submitGuess(GUESS_HI);
@@ -116,19 +124,52 @@ class Game {
 	 * @param  {string} guess GUESS_LO|GUESS_HI
 	 */
 	submitGuess(guess) {
-		let activePlayer = this.getActivePlayer();
-		activePlayer
-			.setGuess(guess);
+		this.startTurn();
+		this.getActivePlayer().setGuess(guess);
 		this.switchPlayers();
+		this.endTurn();
 	}
 
 	/**
 	 * When the currently active player chooses to pass.
 	 */
 	pass() {
+		this.startTurn();
 		this.getActivePlayer().clearGuess();
 		this.switchRoles();
 		this.switchPlayers();
+		this.endTurn();
+	}
+
+	/**
+	 * Draw a card.
+	 */
+	drawCard() {
+		this.startTurn();
+		this.deck.draw();
+	}
+
+	/**
+	 * Handle race conditions triggered by use of keyboard by setting flag for turn in progress.
+	 */
+	startTurn() {
+		this.$body.addClass(TURN_IN_PROGRESS_CLASS);
+	}
+
+	/**
+	 * Triggered when we're "done" with a turn and will begin accepting inputs
+	 * for another turn.
+	 */
+	endTurn() {
+		this.$body.removeClass(TURN_IN_PROGRESS_CLASS);
+	}
+
+	/**
+	 * Check if a turn is currently in progress. Used to bypass handling events
+	 * for starting another play if the previous one isn't finished. 
+	 */
+	turnInProgress() {
+		return this.$body.hasClass(TURN_IN_PROGRESS_CLASS);
 	}
 
 	/**
@@ -137,18 +178,19 @@ class Game {
 	onDrawPileClick() {
 		var activePlayer = this.getActivePlayer();
 		if (activePlayer.role === roles.ROLE_DEALER) {
-			this.deck.draw();
+			this.drawCard();
 		} else {
 			vex.dialog.alert(activePlayer.name + ", it's not your turn to draw yet. Take a guess instead.");
 		}
 	}
+
 
 	/**
 	 * Triggered when we've drawn a new card: we're either just going to switch
 	 * turns if there's no previous guess, or we need to validate prev guess
 	 * against new card.
 	 */
-	onDrawCard() {
+	onDrawCardComplete() {
 		let inactivePlayer = this.getInactivePlayer();
 
 		if (this.deck.remaining === 0) {
@@ -158,6 +200,7 @@ class Game {
 		} else {
 			this.pointsOnTheLine += 1;
 			this.switchPlayers();
+			this.endTurn();
 		}
 	}
 
@@ -168,12 +211,11 @@ class Game {
 	handleGuess(inactivePlayer) {
 		if (this.isGuessCorrect(inactivePlayer)) {
 			this.onCorrectGuess(inactivePlayer);
-			//give the flash a moment to show and start clearing before
-			//we swap turns.
 			setTimeout(() => {
 				this.pointsOnTheLine += 1;
 				this.switchPlayers();
-			}, flash.DISPLAY_DURATION + 100);
+				this.endTurn();
+			}, flash.DISPLAY_DURATION);
 		} else {
 			this.onIncorrectGuess(inactivePlayer);
 		}
@@ -207,7 +249,7 @@ class Game {
 		store.clearGame();
 
 		let winner = this.getWinner();
-		$('body').addClass(GAME_OVER_CLASS);
+		this.$body.addClass(GAME_OVER_CLASS);
 		$('.player').removeClass('player--active');
 
 		let $headline = $('.headline');
@@ -276,19 +318,32 @@ class Game {
 			.clearGuess()
 			.render();
 
+		//clear this slightly before we clear the pile. We've
+		//already added the score to the player hand so it needs
+		//to be cleared in the UI.
+		this.clearPointsOnTheLine();
+
 		setTimeout(() => {
 			this.clearDiscardPile();
+			this.endTurn();
 		}, flash.DISPLAY_DURATION);
+	}
+
+	/**
+	 * Clear the points on the line, resetting to 0.
+	 */
+	clearPointsOnTheLine() {
+		this.pointsOnTheLine = 0;
+		this.deck.renderPointsOnTheLine(this.pointsOnTheLine);
 	}
 
 	/**
 	 * When a guess is incorrect, we clear the pile.
 	 */
 	clearDiscardPile() {
-		this.pointsOnTheLine = 0;
 		this.deck.clearActiveCard();
-		this.save();
 		this.render();
+		this.save();
 	}
 
 	/**
@@ -317,8 +372,8 @@ class Game {
 	 * 
 	 * @return {object} game
 	 */
-	export() {
-		let game = exporter.exportObj(this, ['deck', 'players', 'vent']);
+	export () {
+		let game = exporter.exportObj(this, ['deck', 'players', 'vent', '$body']);
 		game.deck = this.deck.export();
 		game.players = this.exportPlayers();
 		return game;

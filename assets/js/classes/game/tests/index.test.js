@@ -25,6 +25,9 @@ suite('Game', function() {
 		test('should return an object without key for $el', function() {
 			assert.isUndefined(exported['$el']);
 		});
+		test('should return an object without key for $body', function() {
+			assert.isUndefined(exported['$body']);
+		});
 		test('should return an object without key for vent', function() {
 			assert.isUndefined(exported['vent']);
 		});

@@ -72,16 +72,24 @@ module.exports = function(grunt) {
                     run: true
                 }
             }
+        },
+        uglify: {
+            main: {
+                files: {
+                    './public/js/app.bundle.min.js': ['./public/js/app.bundle.js']
+                }
+            }
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-sass');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-mocha');
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-eslint');
 
-    grunt.registerTask('default', ['sass', 'eslint', 'browserify', 'mocha:test']);
+    grunt.registerTask('default', ['sass', 'eslint', 'browserify', 'mocha:test', 'uglify']);
     grunt.registerTask('w', ['watch']);
     grunt.registerTask('test', ['browserify:test', 'mocha:test']);
     grunt.registerTask('lint', ['eslint']);
