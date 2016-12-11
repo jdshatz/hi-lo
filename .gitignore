@@ -2,3 +2,6 @@
 public/.DS_Store
 node_modules
 .sass-cache
+
+deploy.md
+deploy.php
